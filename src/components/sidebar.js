@@ -1,5 +1,13 @@
 import createButton from "./createButton";
 
+export default function createSideBar() {
+    const sidebar = document.createElement('div');
+    sidebar.classList.add('sidebar-block');
+    sidebar.appendChild(createOpenCloseBtn());
+    sidebar.appendChild(createNavBar());
+    return sidebar;
+}
+
 function createNavBar() {
     const nav = document.createElement('nav');
     nav.classList.add('nav');
@@ -46,8 +54,6 @@ function createOpenCloseBtn() {
     div.appendChild(createButton({"btnName": "O/C", "classList": ["btn", "open-close-btn"]}));
     return div;
 }
-
-// Open / close nav when this button clicked
 
 export {
     createNavBar,

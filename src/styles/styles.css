@@ -7,17 +7,15 @@
 }
 
 :root {
-    /* --sidebar-width: 280px;
-    --mb-sidebar-width: 48px; */
     --header-height: 100px;
 }
 
-.content {
+.page-wrapper {
     display: flex;
     height: 100vh;
 }
 
-.main-block {
+.header-content-block {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -26,11 +24,17 @@
 .header {
     height: var(--header-height);
     background-color: cornflowerblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.main-display-screen {
+.content-wrapper {
     height: calc(100vh - var(--header-height));
     background-color: cadetblue;
+
+    /* Padding to move a button a little bit from a border */
+    padding: 15px;
 }
 
 /* Sidebar */
@@ -56,7 +60,7 @@
     }
 }
 
-@media screen and (min-width: 561px) {
+@media screen and (min-width: 560px) {
     
     .sidebar-block {
         width: 280px;

@@ -17,4 +17,4 @@ export function openCloseSideBar() {
             changeSideBarStyle('48px', 'none', 'center');
         }
     })
-} // Make commit - sidebar 
+}

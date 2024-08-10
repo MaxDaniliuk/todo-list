@@ -1,41 +1,19 @@
-import { createNavBar, createOpenCloseBtn } from "./createNavBar";
+import createSideBar from "./sidebar";
+import createHeader from "./header";
+import createContentWrapper from "./contentWrapper";
 import { openCloseSideBar } from "./eventListeners";
 
-function loadPage() {
-    const content = document.querySelector('.content');
+export default function loadPage() {
+    const content = document.querySelector('.page-wrapper');
     content.appendChild(createSideBar());
-    content.appendChild(wrapMainContent());
+    content.appendChild(wrapPageContent());
     openCloseSideBar();
 }
 
-function createSideBar() {
-    const sidebar = document.createElement('div');
-    sidebar.classList.add('sidebar-block');
-    sidebar.appendChild(createOpenCloseBtn());
-    sidebar.appendChild(createNavBar());
-    return sidebar;
+function wrapPageContent() {
+    const pageContentWrapper = document.createElement('div');
+    pageContentWrapper.classList.add('header-content-block');
+    pageContentWrapper.appendChild(createHeader());
+    pageContentWrapper.appendChild(createContentWrapper())
+    return pageContentWrapper;
 }
-
-function wrapMainContent() {
-    const mainContent = document.createElement('div');
-    mainContent.classList.add('main-block');
-
-    mainContent.appendChild(createHeader());
-    mainContent.appendChild(createTaskDisplayScreen())
-    return mainContent;
-}
-
-function createHeader() {
-    const header = document.createElement('header');
-    header.classList.add('header');
-    // Add App image or main TEXT like 'Doer's List'
-    return header;
-}
-
-function createTaskDisplayScreen() {
-    const taskDisplayScreen = document.createElement('div');
-    taskDisplayScreen.classList.add('main-display-screen');
-    return taskDisplayScreen;
-}
-
-export default loadPage;

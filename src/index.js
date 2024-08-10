@@ -1,4 +1,4 @@
 import "./styles/styles.css";
 import loadPage from "./components/loadPage";
 
-loadPage();
+window.addEventListener('DOMContentLoaded', loadPage);
