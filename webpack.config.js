@@ -1,7 +1,9 @@
 let mode = "development";
+let devtool = "inline-source-map";
 
 if (process.env.NODE_ENV === "production") {
-    mode = "production"
+    mode = "production";
+    devtool = "source-map";
 }
 
 const path = require('path');
@@ -28,11 +30,11 @@ module.exports = {
             },
             {
                 test: /\.css$/i,
-                use: ["style-loader", "css-loader"]
+                use: ["style-loader", "css-loader"],
             }
         ]
     },
-    devtool: 'inline-source-map',
+    devtool: devtool,
     devServer: {
         static: {
             directory: path.resolve(__dirname, 'dist')

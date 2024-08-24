@@ -39,38 +39,123 @@
 
 /* Sidebar */
 
+.sidebar-container {
+    height: 100vh;
+    position: relative;
+}
+
+.sidebar-container {
+    transition: width 300ms;
+    transition-timing-function: cubic-bezier(0.4,0,0.2,1);
+}
+
 .sidebar-block {
     background-color: peachpuff;
     height: 100vh;
+    transition: width 300ms;
+    transition-timing-function: cubic-bezier(0.4,0,0.2,1);
 }
 
 .nav {
-    margin-left: 25px;
+    width: 280px;
+    padding-top: 10px;
+    padding-left: 25px;
+    transition: 300ms;
+    transition-timing-function: cubic-bezier(0.4,0,0.2,1);
+}
+
+.nav-list {
+    list-style: none;
+}
+
+.sidebar-block > div:first-of-type {
+    text-align: end;
+}
+
+.overlay {
+    height: 100vh;
+    position: absolute;
+    width: 0%;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 @media screen and (max-width: 560px) {
+    .sidebar-container {
+        width: 48px;
+    }
     .nav {
-        display: none;
+        margin-left: -280px;
     }
     .sidebar-block {
         width: 48px;
     }
-    .sidebar-block > div:first-of-type {
-        text-align: center;
+
+    .overlay-on {
+        animation: appear-overlay 300ms;
+        animation-timing-function: cubic-bezier(0.4,0,0.2,1);
+    }
+    
+    @keyframes appear-overlay {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .overlay-off {
+        animation: vanish-overlay 300ms;
+        animation-timing-function: cubic-bezier(0.4,0,0.2,1);
+    }
+
+    @keyframes vanish-overlay {
+        from {
+            width: calc(100vw - 48px);
+            opacity: 1;
+        }
+        to {
+            width: calc(100vw - 48px);
+            opacity: 0;
+        }
     }
 }
 
-@media screen and (min-width: 560px) {
-    
+@media screen and (min-width: 561px) {
+    .nav {
+        margin-left: 0;
+    }
     .sidebar-block {
         width: 280px;
     }
-
-    .sidebar-block > div:first-of-type {
-        text-align: end;
+    .sidebar-container {
+        width: 280px;
     }
 }
 
+/* Add Task Form */
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-form input[type="text"],
+.task-form textarea
+ {  
+    height: 20px;
+    border: none;
+    outline: none;
+}
+
+.task-form textarea {
+    resize: none;
+    line-height: 20px;
+}
 
 
 
