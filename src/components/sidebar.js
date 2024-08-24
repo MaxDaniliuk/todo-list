@@ -68,12 +68,16 @@ export function operateSideBar() {
 
 function openSideBar() {
     if (window.innerWidth <= 480) {
-        setSideBarStyle("280px", "0px", "absolute", "10");
+        setSideBarStyle("280px", "0px");
         activateOverlay();
     } else if (window.innerWidth > 480) {
         setSideBarStyle("280px", "0px");
         setSideBarContainerSize("280px");
     }
+}
+function setSideBarStyle(sideBarWidth = '', navMarginLeft = '') {
+    setElementWidth(cachedElements.sideBar(), sideBarWidth);
+    cachedElements.navBar().style.marginLeft = navMarginLeft;
 }
 
 export function closeSideBar() {
@@ -86,13 +90,6 @@ export function resetSideBarStyle() {
     resetSideBarContainerSize();
     setSideBarStyle();
     resetOverlay();
-}
-
-function setSideBarStyle(sideBarWidth = '', navMarginLeft = '', position = "relative", zIndex = 2) {
-    cachedElements.sideBar().style.position = position;
-    setElementWidth(cachedElements.sideBar(), sideBarWidth);
-    cachedElements.navBar().style.marginLeft = navMarginLeft;
-    cachedElements.sideBar().style.zIndex = zIndex;
 }
 
 function resetSideBarContainerSize() {
