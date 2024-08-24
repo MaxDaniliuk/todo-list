@@ -1,4 +1,5 @@
-import createButton from "./createButton";
+import { createButton, toggleCssClass } from "./commonFn";
+import { cachedElements } from "./cacheElements";
 
 export default function createSideBar() {
     const sidebar = document.createElement('div');
@@ -55,7 +56,70 @@ function createOpenCloseBtn() {
     return div;
 }
 
-export {
-    createNavBar,
-    createOpenCloseBtn,
-};
+// Below are functions responsible for sidebar's responsiveness
+
+export function operateSideBar() {
+    if (cachedElements.sideBar().offsetWidth == 48) {
+        openSideBar();
+    } else if (cachedElements.sideBar().offsetWidth == 280) {
+        closeSideBar();
+    }
+}
+
+function openSideBar() {
+    if (window.innerWidth <= 480) {
+        setSideBarStyle("280px", "0px", "absolute", "10");
+        activateOverlay();
+    } else if (window.innerWidth > 480) {
+        setSideBarStyle("280px", "0px");
+        setSideBarContainerSize("280px");
+    }
+}
+
+export function closeSideBar() {
+    setSideBarStyle("48px", "-280px");
+    setSideBarContainerSize("48px");
+    deactivateOverlay();
+}
+
+export function resetSideBarStyle() {
+    resetSideBarContainerSize();
+    setSideBarStyle();
+    resetOverlay();
+}
+
+function setSideBarStyle(sideBarWidth = '', navMarginLeft = '', position = "relative", zIndex = 2) {
+    cachedElements.sideBar().style.position = position;
+    setElementWidth(cachedElements.sideBar(), sideBarWidth);
+    cachedElements.navBar().style.marginLeft = navMarginLeft;
+    cachedElements.sideBar().style.zIndex = zIndex;
+}
+
+function resetSideBarContainerSize() {
+    setElementWidth(cachedElements.sideBarContainer());
+}
+
+function setSideBarContainerSize(width) {
+    if (window.innerWidth > 480) {
+        setElementWidth(cachedElements.sideBarContainer(), width);
+    }
+}
+
+function activateOverlay() {
+    toggleCssClass(cachedElements.overlay(), "overlay-on", "overlay-off");
+    setElementWidth(cachedElements.overlay(), "calc(100vw - 48px)");
+}
+
+function deactivateOverlay() {
+    toggleCssClass(cachedElements.overlay(), "overlay-off", "overlay-on");
+    setElementWidth(cachedElements.overlay());
+}
+
+function resetOverlay() {
+    cachedElements.overlay().classList.contains("overlay-off") ? cachedElements.overlay().classList.remove("overlay-off") : cachedElements.overlay().classList.remove("overlay-on");
+    setElementWidth(cachedElements.overlay());
+}
+
+function setElementWidth(element, width = '') {
+    element.style.width = width;
+}

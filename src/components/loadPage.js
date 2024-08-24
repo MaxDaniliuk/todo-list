@@ -19,7 +19,7 @@ function addEvents() {
     eventHandler.openCloseSideBar();
     eventHandler.resizeSideBar();
     eventHandler.removeOverlay();
-    eventHandler.expandTextarea();
+    eventHandler.controlTextareaHeight();
 }
 
 function sideBarContainer() {

@@ -9,4 +9,12 @@ function createButton({btnName, classList, type = ""}) {
     return btn
 }
 
-export default createButton;
+function toggleCssClass(element, classAdd, classRemove) {
+    element.classList.add(classAdd);
+    element.classList.remove(classRemove);
+}
+
+export { 
+    createButton,
+    toggleCssClass,
+};

@@ -22,7 +22,7 @@ function cacheElements() {
         overlayOff,
         btnAddTask,
         taskDescTextarea,
-    }
+    };
 }
 
 export const cachedElements = cacheElements();
