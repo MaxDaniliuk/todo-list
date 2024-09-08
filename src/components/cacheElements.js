@@ -12,7 +12,7 @@ function cacheElements() {
 
     const sectionHeading = () => document.querySelector('.section-heading');
     const todoListContainer = () => document.querySelector('.todo-container');
-    const inboxList = () => document.querySelector('.todo-list');
+    const todoList = () => document.querySelector('.todo-list');
     const li = () => document.querySelector('li');
     const deleteTaskBtns = () => document.querySelectorAll('.delete-task-btn');
 
@@ -38,7 +38,7 @@ function cacheElements() {
         inboxBtn,
         sectionHeading,
         todoListContainer,
-        inboxList,
+        todoList,
         li,
         deleteTaskBtns,
         buttonFormContainer,

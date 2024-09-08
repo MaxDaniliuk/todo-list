@@ -1,7 +1,8 @@
-import loadPage, { createTodoList } from "./loadPage";
+import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar"
-import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle } from "./loadPage";
+import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle } from "./form.js";
+import { changeTodoListDisplay, setSectionHeading } from "./todoList.js"
 import { getTaskData, displayInboxTasks, addTask, getSection, deleteTask } from "./tasks";
 
 //start app 
@@ -71,18 +72,12 @@ export function submitTask() {
 }
 
 function openInbox() {
-    if (!cachedElements.inboxList().classList.contains("inbox")) {
+    if (!cachedElements.todoList().classList.contains("inbox")) {
         cachedElements.inboxBtn().addEventListener('click', () => {
             setSectionHeading("Inbox");
             getSection("Inbox");
             changeTodoListDisplay("Inbox");
             displayInboxTasks();
-            //
-            // If inbox is open it does nothing
-            // If it's not, when inbox button is clicked
-            // it should delete previous ul and create a new ul with 
-            // relevant li(s)
-            //
         });
     }
 }
@@ -97,14 +92,7 @@ function controlTaskDeletion() {
     });
 }
 
-function changeTodoListDisplay(sectionName) {
-    cachedElements.inboxList().remove();
-    cachedElements.todoListContainer().appendChild(createTodoList(sectionName));
-}
 
-function setSectionHeading(headingName) {
-    cachedElements.sectionHeading().innerHTML = headingName;
-}
 
 
 

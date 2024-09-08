@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { displayTask } from './loadPage';
+import { displayTask } from './todoList.js';
 import { cachedElements } from './cacheElements';
 
 export function getTaskData(form) {
@@ -69,7 +69,7 @@ const storageRegulator = (function() {
 export function displayInboxTasks() {
     if (tasksStorage.getInbox().length > 0) {
         storageRegulator.getInboxTasks().forEach((taskObj) => {
-            cachedElements.inboxList().appendChild(displayTask(taskObj));
+            cachedElements.todoList().appendChild(displayTask(taskObj));
             // transfer task data to li elements
             // append each li to ul
             // cachedElements.inboxList().appendChild(li creating function);
@@ -95,7 +95,7 @@ export function addTask() {
     if (checkSection()) {
         if (tasksStorage.getStorageSection() === 'Inbox') {
             const inboxTodos = storageRegulator.getInboxTasks();
-            cachedElements.inboxList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
+            cachedElements.todoList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
         }
     }
 }
