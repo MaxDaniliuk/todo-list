@@ -1,4 +1,6 @@
 import "./styles/styles.css";
-import loadPage from "./components/loadPage";
+import startApp from "./components/eventListeners";
 
-window.addEventListener('DOMContentLoaded', loadPage);
+
+startApp();
+
