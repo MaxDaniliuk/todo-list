@@ -8,11 +8,14 @@ function cacheElements() {
     const overlay = () => document.querySelector('.overlay');
     const overlayOff = () => document.querySelector('.overlay-off');
 
-    const inboxBtn = () => document.querySelector('.inbox-btn');
+    // const inboxBtn = () => document.querySelector('.inbox-btn');
+    // const todayBtn = () => document.querySelector('.today-btn');
+    const navBtns = () => document.querySelectorAll('.nav-btn');
 
+    const sectionContainer = () => document.querySelector('.section-wrapper');
+    const section = () => document.querySelector('.section');
     const sectionHeading = () => document.querySelector('.section-heading');
-    const todoListContainer = () => document.querySelector('.todo-container');
-    const todoList = () => document.querySelector('.todo-list');
+    const todoList = () => document.querySelector('section ul');
     const li = () => document.querySelector('li');
     const deleteTaskBtns = () => document.querySelectorAll('.delete-task-btn');
 
@@ -35,9 +38,10 @@ function cacheElements() {
         sideBarButtonContainer,
         overlay,
         overlayOff,
-        inboxBtn,
+        navBtns,
+        sectionContainer,
+        section,
         sectionHeading,
-        todoListContainer,
         todoList,
         li,
         deleteTaskBtns,

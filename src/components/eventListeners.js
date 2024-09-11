@@ -2,8 +2,8 @@ import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar"
 import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle } from "./form.js";
-import { changeTodoListDisplay, setSectionHeading } from "./todoList.js"
-import { getTaskData, displayInboxTasks, addTask, getSection, deleteTask } from "./tasks";
+import { switchSection } from "./createSection.js"
+import { getTaskData, displayInboxTasks, displayDueTodayTasks, addTask, deleteTask, isSectionOpen } from "./tasks";
 
 //start app 
 export default function startApp() {
@@ -11,7 +11,7 @@ export default function startApp() {
         loadPage();
         addDefaultEvents();
         displayInboxTasks();
-        controlTaskDeletion();
+        removeTask();
     });
 }
 
@@ -20,7 +20,9 @@ function addDefaultEvents() {
     resizeSideBar();
     removeOverlay();
     removeTaskButton();
-    openInbox();
+    controlNavButtons();
+    // openInbox();
+    // openDueTodayTasks();
 }
 
 // SideBar-specific event listeners
@@ -66,23 +68,70 @@ export function submitTask() {
         // Function that displays a task 
         // * Determine what list should be displayed based on section heading
         addTask();
-        controlTaskDeletion();
+        removeTask();
         controlFormDisplay();
     });
 }
 
-function openInbox() {
-    if (!cachedElements.todoList().classList.contains("inbox")) {
-        cachedElements.inboxBtn().addEventListener('click', () => {
-            setSectionHeading("Inbox");
-            getSection("Inbox");
-            changeTodoListDisplay("Inbox");
-            displayInboxTasks();
-        });
-    }
+function controlNavButtons() {
+    let activeSection = 'inbox'; // inbox opens by default
+    cachedElements.navBtns().forEach((navBtn) => {
+        navBtn.addEventListener('click', () => {
+            
+            // First, it does not check the section. Check if current section is open 
+            // This if statement isn't working
+            // 
+            if (navBtn.dataset.innerType === "inbox" && activeSection !== "inbox") {
+                activeSection = 'inbox';
+                if (!isSectionOpen(activeSection)) {
+                    // check it by dataset as well or tasksStorage storage type? 
+                    switchSection();
+                    displayInboxTasks();
+                }
+            } else if (navBtn.dataset.innerType === "today" && activeSection !== "today") {
+                activeSection = 'today';
+                if (!isSectionOpen(activeSection)) {
+                    switchSection('today');
+                    displayDueTodayTasks();
+                }
+            }
+            removeTask();
+            removeTaskButton();
+        })
+    });
 }
 
-function controlTaskDeletion() {
+// function openInbox() {
+//         cachedElements.inboxBtn().addEventListener('click', () => {
+//             if (!cachedElements.section().classList.contains("inbox-section")) {
+//                 switchSection();
+//                  // default param is inbox
+//                 displayInboxTasks();
+//                 // setSectionHeading("Inbox"); // Done
+//                 // setSectionType("Inbox"); 
+//                 // changeTodoListDisplay("Inbox"); Done
+//                 // displayInboxTasks(); Done
+//                 removeTask();
+//                 removeTaskButton();
+//             }
+//         });
+// }
+
+// function openDueTodayTasks() {
+//         cachedElements.todayBtn().addEventListener('click', () => {
+//             if (!cachedElements.todoList().classList.contains("today")) {
+//                 switchSection('today');
+//                 // setSectionHeading("Today");
+//                 // setSectionType("Today");
+//                 // changeTodoListDisplay("Today");
+//                 displayDueTodayTasks();
+//                 removeTask();
+//                 removeTaskButton();
+//             }
+//         });
+// }
+
+function removeTask() {
     cachedElements.deleteTaskBtns().forEach((deleteTaskBtn) => {
         deleteTaskBtn.addEventListener('click', (e) => {
             let targetTask = e.target.closest('li')

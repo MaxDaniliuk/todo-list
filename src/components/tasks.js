@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { displayTask } from './todoList.js';
+import { displayTask } from './createSection.js';
 import { cachedElements } from './cacheElements';
 
 export function getTaskData(form) {
@@ -23,7 +23,7 @@ export function getTaskData(form) {
 // title : "Cook dinner"
 
 const tasksStorage = (function() {
-    const storageSection = "Inbox";
+    let storageSection = "inbox";
     const inbox = [{"title": "Buy a cookie", "description": "Lactose free", "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"}];
     //It simply stores the todos inside an array
     const storeTask = (task) => inbox.push(task);
@@ -34,7 +34,7 @@ const tasksStorage = (function() {
     return { storeTask, getInbox, setStorageSection, getStorageSection }
 })();
 
-const storageRegulator = (function() {
+const storageModerator = (function() {
     const deleteTask = (targetTaskId) => {
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === targetTaskId) {
@@ -62,27 +62,36 @@ const storageRegulator = (function() {
     const getUpcomingTasks = () => {};
 
     // Suitable for inbox
-    const getInboxTasks = () => tasksStorage.getInbox();
-    return { getInboxTasks, getTodayTasks, deleteTask }
+    
+    return { getTodayTasks, deleteTask }
 })();
 
 export function displayInboxTasks() {
     if (tasksStorage.getInbox().length > 0) {
-        storageRegulator.getInboxTasks().forEach((taskObj) => {
+        tasksStorage.getInbox().forEach((taskObj) => {
             cachedElements.todoList().appendChild(displayTask(taskObj));
-            // transfer task data to li elements
-            // append each li to ul
-            // cachedElements.inboxList().appendChild(li creating function);
         });
     }
 }
 
-export function getSection(section) {
-    return tasksStorage.setStorageSection(section);
+export function displayDueTodayTasks() {
+    if (tasksStorage.getInbox().length > 0) {
+        storageModerator.getTodayTasks().forEach((taskObj) => {
+            cachedElements.todoList().appendChild(displayTask(taskObj));
+        });
+    }
+}
+
+export function isSectionOpen(currentSection) {
+    return tasksStorage.getStorageSection() === currentSection;
+}
+
+export function setSectionType(sectionType) { // Do I need this? 
+    return tasksStorage.setStorageSection(sectionType);
 }
 
 export function deleteTask(taskId) {
-    return storageRegulator.deleteTask(taskId);
+    return storageModerator.deleteTask(taskId);
 }
 
 function checkSection() {
@@ -93,9 +102,14 @@ function checkSection() {
 export function addTask() {
     // if inbox, today or upcoming => true
     if (checkSection()) {
-        if (tasksStorage.getStorageSection() === 'Inbox') {
-            const inboxTodos = storageRegulator.getInboxTasks();
+        if (tasksStorage.getStorageSection() === 'inbox') {
+            const inboxTodos = tasksStorage.getInbox();
             cachedElements.todoList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
+        } else if (tasksStorage.getStorageSection() === 'today') {
+            const inboxTodos = tasksStorage.getInbox();
+            if (inboxTodos[inboxTodos.length - 1]["due_date"] === new Date().toISOString().substring(0, 10)) {
+                cachedElements.todoList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
+            }
         }
     }
 }

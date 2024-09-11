@@ -20,15 +20,18 @@ function getNavBtnDetails() {
     const navBarComponents = {
         "inbox": {
             "btnName": "Inbox",
-            "classList": ["btn", "inbox-btn"],
+            "classList": ["btn", "nav-btn"],
+            "innerType": "inbox",
         },
         "today": {
             "btnName": "Today",
-            "classList": ["btn", "today-btn"],
+            "classList": ["btn", "nav-btn"],
+            "innerType": "today",
         },
         "upcoming": {
             "btnName": "Upcoming",
-            "classList": ["btn", "upcoming-btn"],
+            "classList": ["btn", "nav-btn"],
+            "innerType": "upcoming",
         },
     };
     return navBarComponents;
@@ -43,7 +46,7 @@ function createNavBtnsContainer() {
 
     Object.keys(navBtnComponents).forEach(navBtnComponent => {
         let liElement = document.createElement('li');
-        liElement.appendChild(createButton(navBtnComponents[navBtnComponent]))
+        liElement.appendChild(createButton(navBtnComponents[navBtnComponent]));
         ul.appendChild(liElement);
     });
     navUlContainer.appendChild(ul);
