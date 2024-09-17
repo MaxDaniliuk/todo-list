@@ -9,9 +9,11 @@ export function createTaskForm(classEditor = 'task-form') {
     taskForm.action = '#';
     taskForm.method = 'get';
     taskForm.classList.add('data-form', classEditor);
-    let addTaskBtnName = 'Add task'
+    let addTaskBtnName = 'Add task';
+    let buttonType = 'add-type';
     if (classEditor === 'edit-task') {
         addTaskBtnName = 'Submit';
+        buttonType = 'submit-type';
     }
     taskForm.innerHTML += `
         <input type="text" name="title" id="title" placeholder="Title">
@@ -27,7 +29,7 @@ export function createTaskForm(classEditor = 'task-form') {
         </div>
         <div>
             <button class="btn ${classEditor}-cancel-btn">Cancel</button> 
-            <button class="btn ${classEditor}-add-btn enabled-btn" disabled>${addTaskBtnName}</button>
+            <button class="btn ${classEditor}-add-btn enabled-btn" disabled data-button-type="${buttonType}">${addTaskBtnName}</button>
         </div>
     `;
     return taskForm;
@@ -49,7 +51,7 @@ function openTaskForm() {
     addTaskFormEvents();
 }
 
-function recreateTaskButton() {
+export function recreateTaskButton() {
     cachedElements.buttonFormContainer().appendChild(createButton({"btnName": "+ Add task", "classList": ["btn", "add-task-btn"]}));
     eventHandler.removeTaskButton();
 }

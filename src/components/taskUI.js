@@ -1,7 +1,7 @@
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
 import { createTaskForm } from "./form";
-import { copyTaskData, getTaskToBeEdited, clearTaskCopy, evaluateTaskChanges, updateTargetTask, getTaskCopy } from "./tasks";
+import { copyTaskData, getTaskToBeEdited, clearTaskCopy, evaluateTaskChanges, updateTargetTask, getTaskCopy, visualiseTaskData } from "./tasks";
 
 
 export function displayTask(taskObj) {
@@ -149,21 +149,20 @@ export function discardTaskChanges() {
     clearTaskCopy();
 }
 
-export function updateChanges() {
-
+export function updateChanges(buttonType) {
     // update task in the inbox array
     updateTargetTask();
     // update an li based on the data of task copy, 
-    updateUITask();
+    updateUITask(buttonType);
     // remove task copy
     clearTaskCopy();
 }
 
-function updateUITask() {
+function updateUITask(buttonType) {
     const liList = cachedElements.lis()
     for (let i = 0; i < liList.length; i++) {
         if (liList[i].dataset.id === getTaskCopy().taskId) {
-            cachedElements.todoList().insertBefore(displayTask(getTaskCopy()), liList[i]);
+            visualiseTaskData(liList[i], buttonType);
             liList[i].remove();
             return;
         }

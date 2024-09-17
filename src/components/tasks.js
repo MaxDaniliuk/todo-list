@@ -11,8 +11,11 @@ export function getTaskData(form) {
         }
     }
     task["taskId"] = uuidv4();
+    const currentSection = tasksStorage.getStorageSection();
+    if (currentSection !== "inbox" && currentSection !== "today" && currentSection !== "upcoming") task["project"] = tasksStorage.getStorageSection();
     tasksStorage.storeTask(task);
     form.reset();
+    return task;
 }
 
 
@@ -23,11 +26,12 @@ export function getTaskData(form) {
 // title : "Cook dinner"
 
 const tasksStorage = (function() {
-    let storageSection = "inbox";
+    
     const inbox = [{"title": "Buy a cookie", "description": "Lactose free", "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"}];
-
     const storeTask = (task) => inbox.push(task);
     const getInbox = () => inbox;
+
+    let storageSection = "inbox";
     const setStorageSection = (section) => storageSection = section;
     const getStorageSection = () => storageSection;
 
@@ -45,6 +49,7 @@ const storageModerator = (function() {
             }
         }
     };
+
 
     const compareTask = () => {
         const updatedTask = tasksStorage.getEditableTaskCopy();
@@ -172,21 +177,43 @@ function checkSection() {
 }
 
 // Go to taskUI.js
-export function addTask() {
+export function addTask(buttonClicked, taskObject = '') {
+    let task;
+    if (buttonClicked === 'add-type') task = tasksStorage.getInbox()[tasksStorage.getInbox().length - 1];
+    else if (buttonClicked === 'submit-type') task = taskObject
     // if inbox, today or upcoming => true
     if (checkSection()) {
         if (tasksStorage.getStorageSection() === 'inbox') {
-            const inboxTodos = tasksStorage.getInbox();
-            cachedElements.todoList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
+            cachedElements.todoList().appendChild(displayTask(task));
         } else if (tasksStorage.getStorageSection() === 'today') {
-            const inboxTodos = tasksStorage.getInbox();
-            if (inboxTodos[inboxTodos.length - 1]["due_date"] === new Date().toISOString().substring(0, 10)) {
-                cachedElements.todoList().appendChild(displayTask(inboxTodos[inboxTodos.length - 1]));
+            if (task["due_date"] === new Date().toISOString().substring(0, 10)) {
+                cachedElements.todoList().appendChild(displayTask(task));
             }
         }
     }
 }
 
+export function visualiseTaskData (currentTask, buttonPressed) {
+    // Try sepeatating functionality based on button pressed
+    if (tasksStorage.getStorageSection() === 'today' && currentTask["due_date"] === new Date().toISOString().substring(0, 10)) {
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+    } else if (tasksStorage.getStorageSection() === 'inbox') {
+        console.log('fired')
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+    }
+    // } else if (tasksStorage.getStorageSection() === 'Upcoming') {
+
+    // }
+
+}
+// Create new task addition or edition functionality that reflects the date
+function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
+    if (buttonPressed === 'add-type') {
+        return correctList.appendChild(displayTask(currentTask));
+    } else if (buttonPressed === 'submit-type') {
+        return correctList.insertBefore(displayTask(tasksStorage.getEditableTaskCopy()), currentTask);
+    }
+}
 
 
 // Change calendar's placeholder to today's date. Use when uploading a form to the page.

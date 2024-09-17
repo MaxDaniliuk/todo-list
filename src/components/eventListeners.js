@@ -1,9 +1,9 @@
 import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar"
-import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle } from "./form.js";
+import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, recreateTaskButton } from "./form.js";
 import { switchSection } from "./createSection.js"
-import { getTaskData, displayInboxTasks, displayDueTodayTasks, addTask, deleteTask, isSectionOpen, getTaskCopy, evaluateTaskChanges } from "./tasks";
+import { getTaskData, displayInboxTasks, displayDueTodayTasks, visualiseTaskData, deleteTask, isSectionOpen, getTaskCopy, evaluateTaskChanges } from "./tasks";
 import { openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, updateChanges } from "./taskUI.js"
 
 //start app 
@@ -65,8 +65,9 @@ export function closeForm() {
 export function submitTask() {
     cachedElements.btnAddTaskForm().addEventListener('click', (e) => {
         e.preventDefault();
-        getTaskData(e.target.closest('form'));
-        addTask();
+        // getTaskData(e.target.closest('form'));
+        // addTask(e.target.dataset.buttonType);
+        visualiseTaskData(getTaskData(e.target.closest('form')), e.target.dataset.buttonType);
         removeTask();
         editTask();
         controlFormDisplay();
@@ -115,8 +116,16 @@ function editTask() {
             validateEditedData();
             closeEditForm();
             submitTaskChanges();
+            if (cachedElements.taskForm()) {
+                closeTaskForm();
+            }
         });
     });
+}
+
+function closeTaskForm() {
+        cachedElements.taskForm().remove();
+        recreateTaskButton();
 }
 
 function validateEditedData() {
@@ -146,8 +155,10 @@ function submitTaskChanges() {
     cachedElements.editFormSubmitBtn().addEventListener('click', (e) => {
         e.preventDefault();
         if (!evaluateTaskChanges()) {      
-            updateChanges() 
+            updateChanges(e.target.dataset.buttonType) 
             closeTaskEditor();
+            removeTask();
+            editTask();
         }
     });
 }
