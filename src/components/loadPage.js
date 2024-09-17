@@ -1,8 +1,10 @@
 import createSideBar from "./sidebar";
-import { createSection } from "./createSection.js" 
+import { createSection } from "./createSection.js";
+import { displayInboxTasks } from "./tasks.js";
 
 export default function loadPage() {
     loadContent();
+    displayInboxTasks();
 }
 
 function loadContent() {
@@ -56,38 +58,3 @@ function createSectionContent() {
     //
     return sectionWrapper;
 }
-
-// // section-related
-// function createSection() {
-//     const openedSection = document.createElement('section');
-//     openedSection.appendChild(getSectionHeader());
-//     // append ul instead of a todoListContainer
-//     openedSection.appendChild(createTodoListContainer());
-//     return openedSection;
-// }
-
-// // section-related
-// function getSectionHeader() {
-//     const currentSectionHeader = document.createElement('header');
-//     currentSectionHeader.classList.add('section-header')
-//     const sectionHeading = document.createElement('h1');
-//     sectionHeading.classList.add('section-heading');
-//     sectionHeading.textContent = "Inbox";
-//     currentSectionHeader.appendChild(sectionHeading);
-    
-//     const buttonFormContainer = document.createElement('div');
-//     buttonFormContainer.classList.add('button-form-container');
-//     buttonFormContainer.appendChild(createButton({"btnName": "+ Add task", "classList": ["btn", "add-task-btn"]}));
-    
-
-//     currentSectionHeader.appendChild(buttonFormContainer);
-//     return currentSectionHeader;
-// }
-
-// // section-related
-// function createTodoListContainer() {
-//     const todoContainer = document.createElement('div');
-//     todoContainer.classList.add('todo-container');
-//     todoContainer.appendChild(createTodoList());
-//     return todoContainer;
-// }

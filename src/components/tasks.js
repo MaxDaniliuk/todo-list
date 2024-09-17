@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { displayTask } from './createSection.js';
+import { displayTask } from './taskUI.js';
 import { cachedElements } from './cacheElements';
+import _ from 'lodash';
 
 export function getTaskData(form) {
     const task = {};
@@ -9,7 +10,6 @@ export function getTaskData(form) {
             task[form.elements[i]["name"]] = form.elements[i].value; 
         }
     }
-    //Set data attribute https://blog.webdevsimplified.com/2020-10/javascript-data-attributes/
     task["taskId"] = uuidv4();
     tasksStorage.storeTask(task);
     form.reset();
@@ -25,13 +25,16 @@ export function getTaskData(form) {
 const tasksStorage = (function() {
     let storageSection = "inbox";
     const inbox = [{"title": "Buy a cookie", "description": "Lactose free", "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"}];
-    //It simply stores the todos inside an array
+
     const storeTask = (task) => inbox.push(task);
     const getInbox = () => inbox;
     const setStorageSection = (section) => storageSection = section;
     const getStorageSection = () => storageSection;
 
-    return { storeTask, getInbox, setStorageSection, getStorageSection }
+    const editableTaskCopy = {};
+    const getEditableTaskCopy = () => editableTaskCopy;
+
+    return { storeTask, getInbox, setStorageSection, getStorageSection, getEditableTaskCopy }
 })();
 
 const storageModerator = (function() {
@@ -43,6 +46,44 @@ const storageModerator = (function() {
         }
     };
 
+    const compareTask = () => {
+        const updatedTask = tasksStorage.getEditableTaskCopy();
+        return _.isEqual(updatedTask, getEditableTask(updatedTask["taskId"]));
+    };
+
+    const updateTask = () => {
+        const updatedTask = tasksStorage.getEditableTaskCopy();
+        for (let i = 0; i < tasksStorage.getInbox().length; i++) {
+            if (tasksStorage.getInbox()[i].taskId === updatedTask.taskId) {
+                return Object.assign(tasksStorage.getInbox()[i], updatedTask);
+            }
+        }
+    };
+    
+    const clearEditableTaskCopy = () => {
+        let props = Object.getOwnPropertyNames(tasksStorage.getEditableTaskCopy());
+        for (let i = 0; i < props.length; i++) {
+            delete tasksStorage.getEditableTaskCopy()[props[i]];
+        }
+    };
+    const copyEditabelTask = (editableTaskId) => {
+        if(Object.keys(tasksStorage.getEditableTaskCopy()).length) clearEditableTaskCopy(); 
+        for (let i = 0; i < tasksStorage.getInbox().length; i++) {
+            if (tasksStorage.getInbox()[i].taskId === editableTaskId) {
+                const taskCopy = structuredClone(tasksStorage.getInbox()[i]);
+                Object.assign(tasksStorage.getEditableTaskCopy(), taskCopy);
+                return;
+            }
+        }
+    };
+
+    const getEditableTask = (editableTaskId) => {
+        for (let i = 0; i < tasksStorage.getInbox().length; i++) {
+            if (tasksStorage.getInbox()[i].taskId === editableTaskId) {
+                return tasksStorage.getInbox()[i];
+            }
+        }
+    };
     // While the tasks should be displayed based on the function called, like for today pages - display only those tasks that are
     // due Today
     // getTodoList should sort data based on button in the nav clicked.
@@ -63,9 +104,34 @@ const storageModerator = (function() {
 
     // Suitable for inbox
     
-    return { getTodayTasks, deleteTask }
+    return { getTodayTasks, deleteTask, copyEditabelTask, getEditableTask, compareTask, clearEditableTaskCopy, updateTask };
 })();
 
+export function clearTaskCopy() {
+    return storageModerator.clearEditableTaskCopy();
+}
+
+export function updateTargetTask() {
+    return storageModerator.updateTask();
+}
+
+export function evaluateTaskChanges() {
+    return storageModerator.compareTask();
+}
+
+export function copyTaskData(id) {
+    return storageModerator.copyEditabelTask(id);
+}
+
+export function getTaskToBeEdited(id) {
+    return storageModerator.getEditableTask(id);
+}
+
+export function getTaskCopy() {
+    return tasksStorage.getEditableTaskCopy();
+}
+
+// Go to taskUI.js
 export function displayInboxTasks() {
     if (tasksStorage.getInbox().length > 0) {
         tasksStorage.getInbox().forEach((taskObj) => {
@@ -74,6 +140,7 @@ export function displayInboxTasks() {
     }
 }
 
+// Go to taskUI.js
 export function displayDueTodayTasks() {
     if (tasksStorage.getInbox().length > 0) {
         storageModerator.getTodayTasks().forEach((taskObj) => {
@@ -86,19 +153,25 @@ export function isSectionOpen(currentSection) {
     return tasksStorage.getStorageSection() === currentSection;
 }
 
-export function setSectionType(sectionType) { // Do I need this? 
+export function setSectionType(sectionType) {
     return tasksStorage.setStorageSection(sectionType);
+}
+
+export function getSectionType() {
+    return tasksStorage.getStorageSection();
 }
 
 export function deleteTask(taskId) {
     return storageModerator.deleteTask(taskId);
 }
 
+// Go to taskUI.js
 function checkSection() {
     if (tasksStorage.getStorageSection()) return true;
     return false;
 }
 
+// Go to taskUI.js
 export function addTask() {
     // if inbox, today or upcoming => true
     if (checkSection()) {
@@ -113,6 +186,7 @@ export function addTask() {
         }
     }
 }
+
 
 
 // Change calendar's placeholder to today's date. Use when uploading a form to the page.

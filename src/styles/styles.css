@@ -139,7 +139,7 @@ ul {
 
 /* Add Task Form */
 
-.task-form {
+.data-form {
     display: flex;
     flex-direction: column;
 }
@@ -152,19 +152,23 @@ ul {
     cursor: pointer;
 }
 
-.disabled-btn {
+/* 
+.enabled-btn {
+    /* Make transition from disbaled to enabled */
+
+.enabled-btn:disabled {
     cursor: not-allowed;
 }
 
-.task-form input[type="text"],
-.task-form textarea
+.data-form input[type="text"],
+.data-form textarea
  {  
     height: 20px;
     border: none;
     outline: none;
 }
 
-.task-form textarea {
+.data-form textarea {
     resize: none;
     line-height: 20px;
 }
@@ -226,4 +230,20 @@ li > div + div span {
 
 .task-info-container p {
     flex-grow: 1;
+}
+
+/* Modal */
+
+.modal {
+    margin: auto;
+    width: 300px;
+    height: 350px;
+}
+
+.edit-task-btn span {
+    pointer-events: none;
+}
+
+.popup {
+    margin: auto;
 }

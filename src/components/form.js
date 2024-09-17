@@ -1,12 +1,18 @@
 import * as eventHandler from "./eventListeners";
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
+import { getSectionType } from "./tasks";
 
-function createTaskForm() {
+
+export function createTaskForm(classEditor = 'task-form') {
     const taskForm = document.createElement('form');
     taskForm.action = '#';
     taskForm.method = 'get';
-    taskForm.classList.add('task-form');
+    taskForm.classList.add('data-form', classEditor);
+    let addTaskBtnName = 'Add task'
+    if (classEditor === 'edit-task') {
+        addTaskBtnName = 'Submit';
+    }
     taskForm.innerHTML += `
         <input type="text" name="title" id="title" placeholder="Title">
         <textarea name="description" id="description" placeholder="Description"></textarea>
@@ -20,8 +26,8 @@ function createTaskForm() {
             </select>
         </div>
         <div>
-            <button class="btn form-cancel-btn">Cancel</button>
-            <button class="btn form-add-task-btn disabled-btn" disabled>Add task</button>
+            <button class="btn ${classEditor}-cancel-btn">Cancel</button> 
+            <button class="btn ${classEditor}-add-btn enabled-btn" disabled>${addTaskBtnName}</button>
         </div>
     `;
     return taskForm;
@@ -39,6 +45,7 @@ export function controlFormDisplay() {
 
 function openTaskForm() {
     cachedElements.buttonFormContainer().appendChild(createTaskForm());
+    setupCalendar();
     addTaskFormEvents();
 }
 
@@ -62,10 +69,14 @@ export function adjustTextareaHeight() {
 export function validateTaskTitle() {
     if (cachedElements.inputTitle()["name"] === "title" && cachedElements.inputTitle().value.trim() !== '') {
         cachedElements.btnAddTaskForm().removeAttribute("disabled");
-        cachedElements.btnAddTaskForm().classList.remove('disabled-btn');
+    } else {
+        cachedElements.btnAddTaskForm().setAttribute("disabled", true);
     }
 }
 
-function setDueDateToToday() { // Set calendar date
-    cachedElements.dueDate().value = new Date().toISOString().substring(0, 10);
+function setupCalendar() {
+    cachedElements.dueDate().min = new Date().toISOString().substring(0, 10);
+    if ( getSectionType() === "today") {
+        cachedElements.dueDate().value = new Date().toISOString().substring(0, 10);
+    }
 }
