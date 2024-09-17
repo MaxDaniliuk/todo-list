@@ -1,7 +1,7 @@
 import * as eventHandler from "./eventListeners";
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
-import { getSectionType } from "./tasks";
+import { tasksStorage } from "./tasks";
 
 
 export function createTaskForm(classEditor = 'task-form') {
@@ -78,7 +78,7 @@ export function validateTaskTitle() {
 
 function setupCalendar() {
     cachedElements.dueDate().min = new Date().toISOString().substring(0, 10);
-    if ( getSectionType() === "today") {
+    if (tasksStorage.getStorageSection() === "today") {
         cachedElements.dueDate().value = new Date().toISOString().substring(0, 10);
     }
 }

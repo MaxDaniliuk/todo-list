@@ -1,6 +1,6 @@
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
-import { setSectionType } from "./tasks";
+import { tasksStorage } from "./tasks";
 
 // section-related
 export function createSection(sectionName = 'inbox') {
@@ -9,7 +9,7 @@ export function createSection(sectionName = 'inbox') {
     section.appendChild(getSectionHeader(sectionName));
     // append ul instead of a todoListContainer
     section.appendChild(createTodoList(sectionName));
-    setSectionType(sectionName);
+    tasksStorage.setStorageSection(sectionName);
     return section;
 }
 

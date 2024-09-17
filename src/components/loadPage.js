@@ -1,6 +1,6 @@
 import createSideBar from "./sidebar";
 import { createSection } from "./createSection.js";
-import { displayInboxTasks } from "./tasks.js";
+import { displayInboxTasks } from "./taskUI.js";
 
 export default function loadPage() {
     loadContent();

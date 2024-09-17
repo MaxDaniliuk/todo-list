@@ -1,10 +1,11 @@
 import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
-import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar"
+import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar";
 import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, recreateTaskButton } from "./form.js";
-import { switchSection } from "./createSection.js"
-import { getTaskData, displayInboxTasks, displayDueTodayTasks, visualiseTaskData, deleteTask, isSectionOpen, getTaskCopy, evaluateTaskChanges } from "./tasks";
-import { openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, updateChanges } from "./taskUI.js"
+import { switchSection } from "./createSection.js";
+import getTaskData, { tasksStorage, storageModerator } from "./tasks";
+import { visualiseTaskData } from "./tasks";
+import { displayInboxTasks, displayDueTodayTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
 
 //start app 
 export default function startApp() {
@@ -78,7 +79,7 @@ function removeTask() {
     cachedElements.deleteTaskBtns().forEach((deleteTaskBtn) => {
         deleteTaskBtn.addEventListener('click', (e) => {
             let targetTask = e.target.closest('li')
-            deleteTask(targetTask.dataset.id);
+            storageModerator.deleteTask(targetTask.dataset.id);
             targetTask.remove();
         });
     });
@@ -91,13 +92,13 @@ function controlNavButtons() {
         navBtn.addEventListener('click', () => {
             if (navBtn.dataset.innerType === "inbox" && activeSection !== "inbox") {
                 activeSection = 'inbox';
-                if (!isSectionOpen(activeSection)) {
+                if (!storageModerator.isSectionOpen(activeSection)) {
                     switchSection();
                     displayInboxTasks();
                 }
             } else if (navBtn.dataset.innerType === "today" && activeSection !== "today") {
                 activeSection = 'today';
-                if (!isSectionOpen(activeSection)) {
+                if (!storageModerator.isSectionOpen(activeSection)) {
                     switchSection('today');
                     displayDueTodayTasks();
                 }
@@ -129,7 +130,7 @@ function closeTaskForm() {
 }
 
 function validateEditedData() {
-    const taskCopy = getTaskCopy();
+    const taskCopy = tasksStorage.getEditedTaskCopy();
     if (Object.keys(taskCopy).length) {
         cachedElements.editForm().addEventListener('input', (e) => {
             if (e.target === cachedElements.editFormTitle()) {
@@ -154,8 +155,8 @@ function validateEditedData() {
 function submitTaskChanges() {
     cachedElements.editFormSubmitBtn().addEventListener('click', (e) => {
         e.preventDefault();
-        if (!evaluateTaskChanges()) {      
-            updateChanges(e.target.dataset.buttonType) 
+        if (!storageModerator.compareTasks()) {      
+            applyChanges(e.target.dataset.buttonType) 
             closeTaskEditor();
             removeTask();
             editTask();
@@ -166,7 +167,7 @@ function submitTaskChanges() {
 function closeEditForm() {
     cachedElements.editFormCloseBtn().addEventListener('click', (e) => {
         e.preventDefault(); 
-        if (!evaluateTaskChanges()) { // Are objects equal? 
+        if (!storageModerator.compareTasks()) { // Are objects equal? 
             openPopupMessage();
             continueTaskEdition();
             finishTaskEdition();

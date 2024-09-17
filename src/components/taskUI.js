@@ -1,20 +1,28 @@
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
 import { createTaskForm } from "./form";
-import { copyTaskData, getTaskToBeEdited, clearTaskCopy, evaluateTaskChanges, updateTargetTask, getTaskCopy, visualiseTaskData } from "./tasks";
+import { tasksStorage, storageModerator } from "./tasks";
+import { visualiseTaskData } from "./tasks";
 
 
-export function displayTask(taskObj) {
+export default function displayTask(taskObj) {
     const li = document.createElement('li');
     li.dataset.id = taskObj["taskId"];
+
+    if (taskObj["project"]) {
+        const projectName = document.createElement('p');
+        projectName.classList.add('project-title');
+        projectName.textContent = `Project: ${taskObj["project"]}`;
+        li.appendChild(projectName);
+    }
+
     const firstBlock = document.createElement('div');
     const secondBlock = document.createElement('div');
     secondBlock.classList.add('optional-info');
 
     const btnContainer = document.createElement('div');
     const deleteButton = createButton({"btnName": "", "classList": ["btn", "delete-task-btn"]})
-    // const deleteButton = document.createElement('button');
-    // deleteButton.classList.add('btn', 'delete-task-btn');
+ 
     deleteButton.style.borderColor = getPriorityColor(taskObj["priority"]);
     const buttonBg = document.createElement('span');
     buttonBg.classList.add('delete-btn-bg', taskObj["priority"].toLowerCase(), 'priority-identifier');
@@ -71,7 +79,7 @@ export function closeTaskEditor() {
 }
 
 export function validateTaskEdition() { // if equal objects (no changes) yields true
-    if (!evaluateTaskChanges()) {
+    if (!storageModerator.compareTasks()) {
         cachedElements.editFormSubmitBtn().removeAttribute("disabled");
     } else {
         cachedElements.editFormSubmitBtn().setAttribute("disabled", true);
@@ -80,8 +88,8 @@ export function validateTaskEdition() { // if equal objects (no changes) yields 
 
 function processTaskInformation(currentLi) {
     // Extract data and store data
-    copyTaskData(currentLi.dataset.id);
-    const currentTask = getTaskToBeEdited(currentLi.dataset.id);
+    storageModerator.copyEditedTask(currentLi.dataset.id);
+    const currentTask = storageModerator.getEditedTask(currentLi.dataset.id);
     
     // Append the data to the edit-form
     cachedElements.editFormTitle().value = currentTask["title"];
@@ -96,14 +104,6 @@ function processTaskInformation(currentLi) {
     }
 
 }
-
-// {
-//     "title": "Buy a milk",
-//     "description": "Should be 3.5% fat",
-//     "due_date": "2024-09-12",
-//     "priority": "High",
-//     "taskId": "3175472f-f62e-43ef-bff8-9ac14a91e664",
-// }
 
 // Should dialog be added to body or it can be added to a container div? 
 function createTaskEditor() {
@@ -146,25 +146,43 @@ export function closePopupMessage() {
 export function discardTaskChanges() {
     closePopupMessage();
     closeTaskEditor();
-    clearTaskCopy();
+    storageModerator.clearEditedTaskCopy();
 }
 
-export function updateChanges(buttonType) {
+export function applyChanges(buttonType) {
     // update task in the inbox array
-    updateTargetTask();
+    storageModerator.updateTask();
     // update an li based on the data of task copy, 
     updateUITask(buttonType);
     // remove task copy
-    clearTaskCopy();
+    storageModerator.clearEditedTaskCopy();
 }
 
 function updateUITask(buttonType) {
     const liList = cachedElements.lis()
     for (let i = 0; i < liList.length; i++) {
-        if (liList[i].dataset.id === getTaskCopy().taskId) {
+        if (liList[i].dataset.id === tasksStorage.getEditedTaskCopy().taskId) {
             visualiseTaskData(liList[i], buttonType);
             liList[i].remove();
             return;
         }
+    }
+}
+
+// Go to taskUI.js
+export function displayInboxTasks() {
+    if (tasksStorage.getInbox().length > 0) {
+        tasksStorage.getInbox().forEach((taskObj) => {
+            cachedElements.todoList().appendChild(displayTask(taskObj));
+        });
+    }
+}
+
+// Go to taskUI.js
+export function displayDueTodayTasks() {
+    if (tasksStorage.getInbox().length > 0) {
+        storageModerator.getTodayTasks().forEach((taskObj) => {
+            cachedElements.todoList().appendChild(displayTask(taskObj));
+        });
     }
 }

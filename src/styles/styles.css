@@ -190,6 +190,10 @@ li > div + div p {
     padding-left: 24px;
 }
 
+.project-title {
+    padding-left: 24px;
+}
+
 li > div + div span {
     font-size: 13px;
 }

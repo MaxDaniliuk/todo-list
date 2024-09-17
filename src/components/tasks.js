@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { displayTask } from './taskUI.js';
+import displayTask from './taskUI.js';
 import { cachedElements } from './cacheElements';
 import _ from 'lodash';
 
-export function getTaskData(form) {
+export default function getTaskData(form) {
     const task = {};
     for (let i = 0; i < form.elements.length; i++) {
         if (form.elements[i]["name"]) {
@@ -25,7 +25,7 @@ export function getTaskData(form) {
 // taskId : "3ee82357-e4ab-40e7-977d-c33cb65afa2c"
 // title : "Cook dinner"
 
-const tasksStorage = (function() {
+export const tasksStorage = (function() {
     
     const inbox = [{"title": "Buy a cookie", "description": "Lactose free", "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"}];
     const storeTask = (task) => inbox.push(task);
@@ -36,12 +36,12 @@ const tasksStorage = (function() {
     const getStorageSection = () => storageSection;
 
     const editableTaskCopy = {};
-    const getEditableTaskCopy = () => editableTaskCopy;
+    const getEditedTaskCopy = () => editableTaskCopy;
 
-    return { storeTask, getInbox, setStorageSection, getStorageSection, getEditableTaskCopy }
+    return { storeTask, getInbox, setStorageSection, getStorageSection, getEditedTaskCopy }
 })();
 
-const storageModerator = (function() {
+export const storageModerator = (function() {
     const deleteTask = (targetTaskId) => {
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === targetTaskId) {
@@ -50,14 +50,15 @@ const storageModerator = (function() {
         }
     };
 
+    const isSectionOpen = (currentSection) => tasksStorage.getStorageSection() === currentSection;
 
-    const compareTask = () => {
-        const updatedTask = tasksStorage.getEditableTaskCopy();
-        return _.isEqual(updatedTask, getEditableTask(updatedTask["taskId"]));
+    const compareTasks = () => {
+        const updatedTask = tasksStorage.getEditedTaskCopy();
+        return _.isEqual(updatedTask, getEditedTask(updatedTask["taskId"]));
     };
 
     const updateTask = () => {
-        const updatedTask = tasksStorage.getEditableTaskCopy();
+        const updatedTask = tasksStorage.getEditedTaskCopy();
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === updatedTask.taskId) {
                 return Object.assign(tasksStorage.getInbox()[i], updatedTask);
@@ -65,24 +66,24 @@ const storageModerator = (function() {
         }
     };
     
-    const clearEditableTaskCopy = () => {
-        let props = Object.getOwnPropertyNames(tasksStorage.getEditableTaskCopy());
+    const clearEditedTaskCopy = () => {
+        let props = Object.getOwnPropertyNames(tasksStorage.getEditedTaskCopy());
         for (let i = 0; i < props.length; i++) {
-            delete tasksStorage.getEditableTaskCopy()[props[i]];
+            delete tasksStorage.getEditedTaskCopy()[props[i]];
         }
     };
-    const copyEditabelTask = (editableTaskId) => {
-        if(Object.keys(tasksStorage.getEditableTaskCopy()).length) clearEditableTaskCopy(); 
+    const copyEditedTask = (editableTaskId) => {
+        if(Object.keys(tasksStorage.getEditedTaskCopy()).length) clearEditedTaskCopy(); 
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === editableTaskId) {
                 const taskCopy = structuredClone(tasksStorage.getInbox()[i]);
-                Object.assign(tasksStorage.getEditableTaskCopy(), taskCopy);
+                Object.assign(tasksStorage.getEditedTaskCopy(), taskCopy);
                 return;
             }
         }
     };
 
-    const getEditableTask = (editableTaskId) => {
+    const getEditedTask = (editableTaskId) => {
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === editableTaskId) {
                 return tasksStorage.getInbox()[i];
@@ -109,96 +110,39 @@ const storageModerator = (function() {
 
     // Suitable for inbox
     
-    return { getTodayTasks, deleteTask, copyEditabelTask, getEditableTask, compareTask, clearEditableTaskCopy, updateTask };
+    return { getTodayTasks, deleteTask, isSectionOpen, copyEditedTask, getEditedTask, compareTasks, clearEditedTaskCopy, updateTask };
 })();
 
-export function clearTaskCopy() {
-    return storageModerator.clearEditableTaskCopy();
-}
-
-export function updateTargetTask() {
-    return storageModerator.updateTask();
-}
-
-export function evaluateTaskChanges() {
-    return storageModerator.compareTask();
-}
-
-export function copyTaskData(id) {
-    return storageModerator.copyEditabelTask(id);
-}
-
-export function getTaskToBeEdited(id) {
-    return storageModerator.getEditableTask(id);
-}
-
-export function getTaskCopy() {
-    return tasksStorage.getEditableTaskCopy();
-}
-
+//################################################# // Leave it here for a certain time
 // Go to taskUI.js
-export function displayInboxTasks() {
-    if (tasksStorage.getInbox().length > 0) {
-        tasksStorage.getInbox().forEach((taskObj) => {
-            cachedElements.todoList().appendChild(displayTask(taskObj));
-        });
-    }
-}
+// function checkOrdinarySection() {
+//     const openSection = tasksStorage.getStorageSection();
+//     if (openSection !== "inbox" || openSection !== "today" || openSection !== "upcoming") return true;
+//     return false;
+// }
 
-// Go to taskUI.js
-export function displayDueTodayTasks() {
-    if (tasksStorage.getInbox().length > 0) {
-        storageModerator.getTodayTasks().forEach((taskObj) => {
-            cachedElements.todoList().appendChild(displayTask(taskObj));
-        });
-    }
-}
-
-export function isSectionOpen(currentSection) {
-    return tasksStorage.getStorageSection() === currentSection;
-}
-
-export function setSectionType(sectionType) {
-    return tasksStorage.setStorageSection(sectionType);
-}
-
-export function getSectionType() {
-    return tasksStorage.getStorageSection();
-}
-
-export function deleteTask(taskId) {
-    return storageModerator.deleteTask(taskId);
-}
-
-// Go to taskUI.js
-function checkSection() {
-    if (tasksStorage.getStorageSection()) return true;
-    return false;
-}
-
-// Go to taskUI.js
-export function addTask(buttonClicked, taskObject = '') {
-    let task;
-    if (buttonClicked === 'add-type') task = tasksStorage.getInbox()[tasksStorage.getInbox().length - 1];
-    else if (buttonClicked === 'submit-type') task = taskObject
-    // if inbox, today or upcoming => true
-    if (checkSection()) {
-        if (tasksStorage.getStorageSection() === 'inbox') {
-            cachedElements.todoList().appendChild(displayTask(task));
-        } else if (tasksStorage.getStorageSection() === 'today') {
-            if (task["due_date"] === new Date().toISOString().substring(0, 10)) {
-                cachedElements.todoList().appendChild(displayTask(task));
-            }
-        }
-    }
-}
+// // Go to taskUI.js
+// export function addTask(buttonClicked, taskObject = '') {
+//     let task;
+//     if (buttonClicked === 'add-type') task = tasksStorage.getInbox()[tasksStorage.getInbox().length - 1];
+//     else if (buttonClicked === 'submit-type') task = taskObject
+//     // if inbox, today or upcoming => true
+//     if (checkOrdinarySection()) {
+//         if (tasksStorage.getStorageSection() === 'inbox') {
+//             cachedElements.todoList().appendChild(displayTask(task));
+//         } else if (tasksStorage.getStorageSection() === 'today') {
+//             if (task["due_date"] === new Date().toISOString().substring(0, 10)) {
+//                 cachedElements.todoList().appendChild(displayTask(task));
+//             }
+//         }
+//     }
+// }
 
 export function visualiseTaskData (currentTask, buttonPressed) {
     // Try sepeatating functionality based on button pressed
     if (tasksStorage.getStorageSection() === 'today' && currentTask["due_date"] === new Date().toISOString().substring(0, 10)) {
         determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
     } else if (tasksStorage.getStorageSection() === 'inbox') {
-        console.log('fired')
         determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
     }
     // } else if (tasksStorage.getStorageSection() === 'Upcoming') {
@@ -211,7 +155,7 @@ function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
     if (buttonPressed === 'add-type') {
         return correctList.appendChild(displayTask(currentTask));
     } else if (buttonPressed === 'submit-type') {
-        return correctList.insertBefore(displayTask(tasksStorage.getEditableTaskCopy()), currentTask);
+        return correctList.insertBefore(displayTask(tasksStorage.getEditedTaskCopy()), currentTask);
     }
 }
 
