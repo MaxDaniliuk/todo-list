@@ -175,9 +175,19 @@ ul {
 
 /* Todo Li */
 
+.section li {
+    outline: none;
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+}
+
 li > div {
     display: flex;
     gap: 4px;
+}
+
+.task-first-block {
+    padding-bottom: 4px;
 }
 
 li > div + div {
@@ -227,14 +237,15 @@ li > div + div span {
     background-color: #a0a1a133;
 }
 
-.task-info-container {
-    display: flex;
+.task-title-container {
     flex-grow: 1;
+    align-self: center;
 }
 
 .task-info-container p {
     flex-grow: 1;
 }
+
 
 /* Modal */
 
@@ -250,4 +261,35 @@ li > div + div span {
 
 .popup {
     margin: auto;
+}
+
+
+/* This week-related styles */
+
+.dates-container {
+    display: flex;
+}
+
+.day-date {
+    flex: 1;
+    text-align: center;
+    
+}
+
+.day-date span {
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.current-day {
+    font-weight: bold;
+}
+
+.current-day span + span {
+    color: white;
+    background-color: red;
+}
+
+.day-before {
+    color: gray;
 }

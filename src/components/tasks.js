@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import displayTask from './taskUI.js';
 import { cachedElements } from './cacheElements';
 import _ from 'lodash';
+import { endOfISOWeek, startOfISOWeek, eachDayOfInterval, format } from "date-fns";
+
 
 export default function getTaskData(form) {
     const task = {};
@@ -27,7 +29,35 @@ export default function getTaskData(form) {
 
 export const tasksStorage = (function() {
     
-    const inbox = [{"title": "Buy a cookie", "description": "Lactose free", "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"}];
+    const inbox = [{"title": "Buy a cookie", 
+        // "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut feugiat sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sit amet tellus sit amet elit consectetur euismod. Sed vehicula auctor cursus. Integer id nunc blandit, viverra nunc vel, ullamcorper turpis. Quisque euismod orci ante. Ut eleifend purus non sem tempus, sed volutpat urna rhoncus. Cras faucibus, ante vel tincidunt mattis, quam quam suscipit velit, non commodo nisi ligula id libero.", 
+        "description": "Gluten-free",
+        "due_date": "2024-09-01", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"},
+        {
+            "title": "Thursday 26 Sep",
+            "description": "first",
+            "due_date": "2024-09-26", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
+        },
+        {
+            "title": "Sunday 29 Sep",
+            "description": "second",
+            "due_date": "2024-09-23", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
+        },
+        {
+            "title": "Saturday 28 Sep",
+            "description": "third",
+            "due_date": "2024-09-28", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
+        },
+        {
+            "title": "Friday One 27 Sep",
+            "description": "fourth",
+            "due_date": "2024-09-27", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
+        },
+        {
+            "title": "Friday Two 27 Sep",
+            "description": "fourth",
+            "due_date": "2024-09-27", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a5"
+        }];
     const storeTask = (task) => inbox.push(task);
     const getInbox = () => inbox;
 
@@ -90,27 +120,28 @@ export const storageModerator = (function() {
             }
         }
     };
-    // While the tasks should be displayed based on the function called, like for today pages - display only those tasks that are
-    // due Today
-    // getTodoList should sort data based on button in the nav clicked.
-    // date format '2024-08-29'
 
     const getTodayTasks = () => {
         return tasksStorage.getInbox().filter((task) => task["due_date"] === new Date().toISOString().substring(0, 10));
+    }; // Output: ['Sep 23, 2024', 'Sep 24, 2024', 'Sep 25, 2024', 'Sep 26, 2024', 'Sep 27, 2024', 'Sep 28, 2024', 'Sep 29, 2024']
+
+    
+    const getThisWeekTasks = () => {
+        const currentWeekDays = selectCurrentWeekDays()
+                                .map((task) => format(task, 'yyyy-MM-dd'));
+        return tasksStorage.getInbox().filter((task) => currentWeekDays.includes(task["due_date"]));
     };
 
-    // Sort upcoming tasks based on date
-    // Sort dates like 2024-08-08 2024-08-10 etc
-    // todoList.sort((a, b) => {
-    //     a = a.split('-').join('');
-    //     b = b.split('-').join('');
-    //     return a < b ? -1 : a > b ? 1 : 0;
-    // });
-    const getUpcomingTasks = () => {};
-
-    // Suitable for inbox
+    const sortThisWeekTasks = () => {
+        const thisWeekTasks = getThisWeekTasks().slice();
+        return thisWeekTasks.sort((a, b) => {
+                a = a["due_date"].split('-').join('');
+                b = b["due_date"].split('-').join('');
+                return a < b ? -1 : a > b ? 1 : 0;
+            });
+    }
     
-    return { getTodayTasks, deleteTask, isSectionOpen, copyEditedTask, getEditedTask, compareTasks, clearEditedTaskCopy, updateTask };
+    return { getTodayTasks, sortThisWeekTasks, deleteTask, isSectionOpen, copyEditedTask, getEditedTask, compareTasks, clearEditedTaskCopy, updateTask };
 })();
 
 //################################################# // Leave it here for a certain time
@@ -150,7 +181,7 @@ export function visualiseTaskData (currentTask, buttonPressed) {
     // }
 
 }
-// Create new task addition or edition functionality that reflects the date
+
 function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
     if (buttonPressed === 'add-type') {
         return correctList.appendChild(displayTask(currentTask));
@@ -159,7 +190,15 @@ function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
     }
 }
 
-
 // Change calendar's placeholder to today's date. Use when uploading a form to the page.
 // const date = document.querySelector('#dueDate');
 // date.value = new Date().toISOString().substring(0, 10);
+
+export function selectCurrentWeekDays() {
+    const currentWeekDays = eachDayOfInterval({
+        start: startOfISOWeek(new Date()), 
+        end: endOfISOWeek(new Date())
+    })
+    return currentWeekDays;
+}
+

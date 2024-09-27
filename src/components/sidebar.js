@@ -28,10 +28,10 @@ function getNavBtnDetails() {
             "classList": ["btn", "nav-btn"],
             "innerType": "today",
         },
-        "upcoming": {
-            "btnName": "Upcoming",
+        "thisWeek": {
+            "btnName": "Week",
             "classList": ["btn", "nav-btn"],
-            "innerType": "upcoming",
+            "innerType": "week",
         },
     };
     return navBarComponents;

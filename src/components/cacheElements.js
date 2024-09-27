@@ -12,8 +12,13 @@ function cacheElements() {
 
     const sectionContainer = () => document.querySelector('.section-wrapper');
     const section = () => document.querySelector('.section');
+    const sectionHeader = () => document.querySelector('.section-header');
     const sectionHeading = () => document.querySelector('.section-heading');
-    const todoList = () => document.querySelector('section ul');
+    const todoList = () => document.querySelector('.section ul');
+    const subTodoList = (subSection) => subSection.querySelector('.sub-section ul');
+    const subTodoLists = () => document.querySelectorAll('.sub-section ul');
+    const subSectionHeading = (subSection) => subSection.querySelector('.section-heading');
+    const subSectionBtnForm = () => document.querySelector('.sub-section .button-form-container'); 
     const li = () => document.querySelector('li');
     const lis = () => [...document.querySelectorAll('[data-id]')];
     const deleteTaskBtns = () => document.querySelectorAll('.delete-task-btn');
@@ -53,8 +58,13 @@ function cacheElements() {
         navBtns,
         sectionContainer,
         section,
+        sectionHeader,
         sectionHeading,
         todoList,
+        subTodoList,
+        subTodoLists,
+        subSectionHeading,
+        subSectionBtnForm,
         li,
         lis,
         deleteTaskBtns,

@@ -1,9 +1,9 @@
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
-import { createTaskForm } from "./form";
+import { createTaskForm, setupCalendar } from "./form";
 import { tasksStorage, storageModerator } from "./tasks";
 import { visualiseTaskData } from "./tasks";
-
+import { format } from "date-fns";
 
 export default function displayTask(taskObj) {
     const li = document.createElement('li');
@@ -17,10 +17,11 @@ export default function displayTask(taskObj) {
     }
 
     const firstBlock = document.createElement('div');
+    firstBlock.classList.add('task-first-block');
     const secondBlock = document.createElement('div');
     secondBlock.classList.add('optional-info');
 
-    const btnContainer = document.createElement('div');
+    const deleteBtnContainer = document.createElement('div');
     const deleteButton = createButton({"btnName": "", "classList": ["btn", "delete-task-btn"]})
  
     deleteButton.style.borderColor = getPriorityColor(taskObj["priority"]);
@@ -29,21 +30,26 @@ export default function displayTask(taskObj) {
     buttonBg.dataset.priority = taskObj["priority"];
     deleteButton.appendChild(buttonBg);
     // Can also adjust background-color + opacity / alpha color
-    btnContainer.appendChild(deleteButton);
+    deleteBtnContainer.appendChild(deleteButton);
     
-    const titleEditContainer = document.createElement('div');
-    titleEditContainer.classList.add('task-info-container');
+    // const titleEditContainer = document.createElement('div');
+    // titleEditContainer.classList.add('task-title-container');
     const title = document.createElement('p');
+    title.classList.add('task-title-container');
     title.textContent = taskObj["title"];
+    // titleEditContainer.appendChild(title);
+    // titleEditContainer.appendChild(editButton);
+
+    const editBtnContainer = document.createElement('div');
     const editButton = createButton({"btnName": '', "classList": ["btn", "edit-task-btn"]});
     const editSvgSpan = document.createElement('span');
     editSvgSpan.textContent = "Edit" // will have an edit svg image later
     editButton.appendChild(editSvgSpan)
-    titleEditContainer.appendChild(title);
-    titleEditContainer.appendChild(editButton);
+    editBtnContainer.appendChild(editButton);
 
-    firstBlock.appendChild(btnContainer);
-    firstBlock.appendChild(titleEditContainer);
+    firstBlock.appendChild(deleteBtnContainer);
+    firstBlock.appendChild(title);
+    firstBlock.appendChild(editBtnContainer);
 
     const description = document.createElement('p');
     description.textContent = taskObj["description"];
@@ -70,6 +76,7 @@ export function openTaskEditor(currentLi) {
     if (cachedElements.modal()) {
         cachedElements.modal().showModal();
         processTaskInformation(currentLi);
+        setupCalendar();
     }
 }
 
@@ -87,11 +94,8 @@ export function validateTaskEdition() { // if equal objects (no changes) yields 
 }
 
 function processTaskInformation(currentLi) {
-    // Extract data and store data
     storageModerator.copyEditedTask(currentLi.dataset.id);
     const currentTask = storageModerator.getEditedTask(currentLi.dataset.id);
-    
-    // Append the data to the edit-form
     cachedElements.editFormTitle().value = currentTask["title"];
     cachedElements.editFormDescription().value = currentTask["description"];
     cachedElements.editFormCalendar().value = currentTask["due_date"];
@@ -102,7 +106,6 @@ function processTaskInformation(currentLi) {
         if (option.hasAttribute("selected")) option.removeAttribute("selected");
         if (option.text === currentTask["priority"]) option.setAttribute("selected", true);
     }
-
 }
 
 // Should dialog be added to body or it can be added to a container div? 
@@ -111,8 +114,6 @@ function createTaskEditor() {
     dialog.classList.add('modal');
     dialog.appendChild(createTaskForm("edit-task"));
     document.body.append(dialog); 
-    // Now, I should fill form's inputs with the task's current values.
-    // First, get edit form's elements
 }
 
 function createPopupMessage() {
@@ -133,9 +134,7 @@ function createPopupMessage() {
 
 export function openPopupMessage() {
     createPopupMessage();
-    if (cachedElements.popup()) {
-        cachedElements.popup().showModal();
-    }
+    if (cachedElements.popup()) cachedElements.popup().showModal();
 } 
 
 export function closePopupMessage() {
@@ -169,7 +168,6 @@ function updateUITask(buttonType) {
     }
 }
 
-// Go to taskUI.js
 export function displayInboxTasks() {
     if (tasksStorage.getInbox().length > 0) {
         tasksStorage.getInbox().forEach((taskObj) => {
@@ -178,11 +176,27 @@ export function displayInboxTasks() {
     }
 }
 
-// Go to taskUI.js
 export function displayDueTodayTasks() {
     if (tasksStorage.getInbox().length > 0) {
         storageModerator.getTodayTasks().forEach((taskObj) => {
             cachedElements.todoList().appendChild(displayTask(taskObj));
         });
+    }
+}
+
+export function displayThisWeekTasks(dayDate, currentUl) {
+    if (tasksStorage.getInbox().length > 0) {
+        const thisWeekTasks = storageModerator.sortThisWeekTasks();
+        console.log(currentUl)
+        console.log(dayDate)
+        for (let i = 0; i < thisWeekTasks.length; i++) {
+            if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {
+                currentUl.appendChild(displayTask(thisWeekTasks[i]));
+            } else if (dayDate >= format(new Date(), 'yyyy-MM-dd')) {
+                if (thisWeekTasks[i]["due_date"] === dayDate) {
+                    currentUl.appendChild(displayTask(thisWeekTasks[i]));
+                }
+            }
+        }        
     }
 }

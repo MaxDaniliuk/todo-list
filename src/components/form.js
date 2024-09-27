@@ -76,9 +76,11 @@ export function validateTaskTitle() {
     }
 }
 
-function setupCalendar() {
-    cachedElements.dueDate().min = new Date().toISOString().substring(0, 10);
+export function setupCalendar() {
+    let todayDate = new Date().toISOString().substring(0, 10);
+    cachedElements.dueDate().min = todayDate;
     if (tasksStorage.getStorageSection() === "today") {
-        cachedElements.dueDate().value = new Date().toISOString().substring(0, 10);
+        cachedElements.dueDate().value = todayDate;
+        console.log(new Date().getDay())
     }
 }

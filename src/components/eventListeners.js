@@ -2,8 +2,8 @@ import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar";
 import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, recreateTaskButton } from "./form.js";
-import { switchSection } from "./createSection.js";
-import getTaskData, { tasksStorage, storageModerator } from "./tasks";
+import { switchSection, customiseWeekSection } from "./createSection.js";
+import getTaskData, { tasksStorage, storageModerator, selectCurrentWeekDays } from "./tasks";
 import { visualiseTaskData } from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
 
@@ -12,6 +12,7 @@ export default function startApp() {
     window.addEventListener('DOMContentLoaded', () => {
         loadPage();
         addEvents();
+        // selectCurrentWeekDays();
     });
 }
 
@@ -93,7 +94,7 @@ function controlNavButtons() {
             if (navBtn.dataset.innerType === "inbox" && activeSection !== "inbox") {
                 activeSection = 'inbox';
                 if (!storageModerator.isSectionOpen(activeSection)) {
-                    switchSection();
+                    switchSection('inbox');
                     displayInboxTasks();
                 }
             } else if (navBtn.dataset.innerType === "today" && activeSection !== "today") {
@@ -101,6 +102,12 @@ function controlNavButtons() {
                 if (!storageModerator.isSectionOpen(activeSection)) {
                     switchSection('today');
                     displayDueTodayTasks();
+                }
+            } else if (navBtn.dataset.innerType === "week" && activeSection !== "week") {
+                activeSection = 'week';
+                if (!storageModerator.isSectionOpen(activeSection)) {
+                    switchSection('week');
+                    customiseWeekSection();
                 }
             }
             removeTask();
