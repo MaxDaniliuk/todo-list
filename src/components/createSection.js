@@ -1,6 +1,6 @@
 import { cachedElements } from "./cacheElements";
 import { createButton, toggleCssClass } from "./commonFn";
-import { tasksStorage, selectCurrentWeekDays } from "./tasks";
+import { tasksStorage, selectCurrentWeekDays, storageModerator } from "./tasks";
 import { displayThisWeekTasks } from "./taskUI";
 import { format, isToday, isTomorrow} from "date-fns";
 
@@ -60,18 +60,20 @@ function createThisWeekSection() {
     const currentWeekDays = selectCurrentWeekDays();
     const weekCalendar = document.createElement('div');
     weekCalendar.classList.add('dates-container');
+    const thisWeekTasks = storageModerator.sortThisWeekTasks();
     
     let overdueSectionNeeded = false;
     for (let i = 0; i < currentWeekDays.length; i++) {
         let deicticDayTerm = '';
-        if ((format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd'))) {
+        if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
             deicticDayTerm = 'day-before';
-            createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
-            if (overdueSectionNeeded === false) {
+            if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
+            if (overdueSectionNeeded === false && cachedElements.overdueList()) {
                 overdueSectionNeeded = true;
                 cachedElements.subSectionBtnForm().remove();
             }
-        } else {
+        } 
+        if ((format(currentWeekDays[i], 'yyyy-MM-dd') >= format(new Date(), 'yyyy-MM-dd'))) {
             overdueSectionNeeded = false;
             let subSectionHeading = format(currentWeekDays[i], "d MMM ‧ EEEE");
             if (isToday(currentWeekDays[i])) {
@@ -116,4 +118,9 @@ function createWeekCalendar(deicticDayTerm, dayDate) {
     return dayContainer;
 }
 
-
+export function isOverdueSectionEmpty() {
+    let overdueSection = cachedElements.overdueList();
+    if (overdueSection && [...cachedElements.subTodoList(overdueSection).children].length === 0) {
+        overdueSection.remove();
+    }
+}

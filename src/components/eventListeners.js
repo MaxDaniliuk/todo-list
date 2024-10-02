@@ -2,7 +2,7 @@ import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar";
 import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, closeTaskForm } from "./form.js";
-import { switchSection, customiseWeekSection } from "./createSection.js";
+import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
 import getTaskData, { tasksStorage, storageModerator, selectCurrentWeekDays } from "./tasks";
 import { visualiseTaskData } from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
@@ -84,6 +84,7 @@ function removeTask() {
             let targetTask = e.target.closest('li')
             storageModerator.deleteTask(targetTask.dataset.id);
             targetTask.remove();
+            isOverdueSectionEmpty();
         });
     });
 }
@@ -165,6 +166,7 @@ function submitTaskChanges() {
             closeTaskEditor();
             removeTask();
             editTask();
+            isOverdueSectionEmpty();
         }
     });
 }
@@ -179,7 +181,6 @@ function closeEditForm() {
         } else {
             closeTaskEditor();
         }
-        
     });
 }
 
@@ -193,6 +194,7 @@ function finishTaskEdition() {
         discardTaskChanges();
     });
 }
+
 
 
 
