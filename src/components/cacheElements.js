@@ -15,22 +15,28 @@ function cacheElements() {
     const sectionHeader = () => document.querySelector('.section-header');
     const sectionHeading = () => document.querySelector('.section-heading');
     const todoList = () => document.querySelector('.section ul');
+    const closestTodoList = (section) => section.querySelector('ul');
     const subTodoList = (subSection) => subSection.querySelector('.sub-section ul');
     const subTodoLists = () => document.querySelectorAll('.sub-section ul');
+    const overdueList = () => document.querySelector('.overdue');
     const subSectionHeading = (subSection) => subSection.querySelector('.section-heading');
     const subSectionBtnForm = () => document.querySelector('.sub-section .button-form-container'); 
     const li = () => document.querySelector('li');
     const lis = () => [...document.querySelectorAll('[data-id]')];
+    const subUl = (li) => li.querySelector('ul'); 
     const deleteTaskBtns = () => document.querySelectorAll('.delete-task-btn');
     const editTaskBtns = () => document.querySelectorAll('.edit-task-btn');
 
     const buttonFormContainer = () => document.querySelector('.button-form-container');
-    const btnAddTask = () => document.querySelector('.add-task-btn');
+    const buttonFormContinaers = () => document.querySelectorAll('.button-form-container');
+    const btnsAddTask = () => document.querySelectorAll('.add-task-btn');
     const taskForm = () => document.querySelector('.task-form');
+    const taskForms = () => document.querySelectorAll('.task-form');
     const inputTitle = () => document.querySelector('input[type="text"]');
     const taskDescTextarea = () => document.querySelector('.task-form textarea');
 
     const dueDate = () => document.querySelector('#dueDate');
+    const subTaskDueDate = (li) => li.querySelector('.optional-info span');
     const btnAddTaskForm = () => document.querySelector('.task-form-add-btn');
     const btnCancelForm = () => document.querySelector('.task-form-cancel-btn');
     
@@ -61,18 +67,24 @@ function cacheElements() {
         sectionHeader,
         sectionHeading,
         todoList,
+        closestTodoList,
         subTodoList,
         subTodoLists,
+        overdueList,
         subSectionHeading,
         subSectionBtnForm,
         li,
         lis,
+        subUl,
         deleteTaskBtns,
         editTaskBtns,
         buttonFormContainer,
-        btnAddTask,
+        buttonFormContinaers,
+        btnsAddTask,
         taskForm,
+        taskForms,
         dueDate,
+        subTaskDueDate,
         inputTitle,
         taskDescTextarea,
         btnAddTaskForm,

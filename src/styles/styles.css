@@ -181,6 +181,10 @@ ul {
     padding: 8px 0;
 }
 
+.week-list > li {
+    border-bottom: 1px black;
+}
+
 li > div {
     display: flex;
     gap: 4px;
@@ -277,7 +281,7 @@ li > div + div span {
 }
 
 .day-date span {
-    padding: 4px;
+    padding: 2px;
     border-radius: 8px;
 }
 

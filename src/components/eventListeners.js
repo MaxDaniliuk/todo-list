@@ -1,7 +1,7 @@
 import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar";
-import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, recreateTaskButton } from "./form.js";
+import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, closeTaskForm } from "./form.js";
 import { switchSection, customiseWeekSection } from "./createSection.js";
 import getTaskData, { tasksStorage, storageModerator, selectCurrentWeekDays } from "./tasks";
 import { visualiseTaskData } from "./tasks";
@@ -52,9 +52,13 @@ export function controlTextareaHeight() {
 }
 
 export function removeTaskButton() {
-    if (cachedElements.btnAddTask()) {
-        cachedElements.btnAddTask().addEventListener('click', controlFormDisplay);
-    }
+    cachedElements.btnsAddTask().forEach((addTaskButton) => {
+        addTaskButton.addEventListener('click', (e) => {
+            if (cachedElements.taskForms().length < 1) {
+                controlFormDisplay(e.target.closest('div'));
+            }
+        });
+    });
 }
 
 export function closeForm() {
@@ -67,9 +71,7 @@ export function closeForm() {
 export function submitTask() {
     cachedElements.btnAddTaskForm().addEventListener('click', (e) => {
         e.preventDefault();
-        // getTaskData(e.target.closest('form'));
-        // addTask(e.target.dataset.buttonType);
-        visualiseTaskData(getTaskData(e.target.closest('form')), e.target.dataset.buttonType);
+        visualiseTaskData(getTaskData(e.target.closest('form')), e.target.dataset.buttonType, e.target.closest('section'));
         removeTask();
         editTask();
         controlFormDisplay();
@@ -110,6 +112,7 @@ function controlNavButtons() {
                     customiseWeekSection();
                 }
             }
+            tasksStorage.setStorageSection(activeSection);
             removeTask();
             removeTaskButton();
             editTask();
@@ -129,11 +132,6 @@ function editTask() {
             }
         });
     });
-}
-
-function closeTaskForm() {
-        cachedElements.taskForm().remove();
-        recreateTaskButton();
 }
 
 function validateEditedData() {

@@ -1,7 +1,8 @@
 import * as eventHandler from "./eventListeners";
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
-import { tasksStorage } from "./tasks";
+import { tasksStorage, selectCurrentWeekDays } from "./tasks";
+import { format } from "date-fns";
 
 
 export function createTaskForm(classEditor = 'task-form') {
@@ -35,25 +36,38 @@ export function createTaskForm(classEditor = 'task-form') {
     return taskForm;
 }
 
-export function controlFormDisplay() {
-    if (cachedElements.btnAddTask()) {
-        openTaskForm();
-        cachedElements.btnAddTask().remove();
+export function controlFormDisplay(buttonFormContainer) {
+    buttonFormContainer = buttonFormContainer || ''
+    if (buttonFormContainer) {
+        openTaskForm(buttonFormContainer);
+        buttonFormContainer.children[0].remove();
     } else if (cachedElements.taskForm()) {
-        cachedElements.taskForm().remove();
-        recreateTaskButton();
+        closeTaskForm()
     }
 }
 
-function openTaskForm() {
-    cachedElements.buttonFormContainer().appendChild(createTaskForm());
-    setupCalendar();
+export function closeTaskForm() {
+    cachedElements.taskForm().remove();
+    recreateTaskButton();
+}
+
+function openTaskForm(buttonFormContainer) {
+    buttonFormContainer.appendChild(createTaskForm());
+    if (tasksStorage.getStorageSection() === "week") {
+        setupCalendar(buttonFormContainer);
+    } else {
+        setupCalendar();
+    }
     addTaskFormEvents();
 }
 
 export function recreateTaskButton() {
-    cachedElements.buttonFormContainer().appendChild(createButton({"btnName": "+ Add task", "classList": ["btn", "add-task-btn"]}));
-    eventHandler.removeTaskButton();
+    cachedElements.buttonFormContinaers().forEach((buttonFormContainer) => {
+        if (!buttonFormContainer.hasChildNodes()) { // When cancel, it appends another button at next lis
+            buttonFormContainer.appendChild(createButton({"btnName": "+ Add task", "classList": ["btn", "add-task-btn"]}));
+            eventHandler.removeTaskButton();
+        }
+    });
 }
 
 function addTaskFormEvents() {
@@ -76,11 +90,28 @@ export function validateTaskTitle() {
     }
 }
 
-export function setupCalendar() {
-    let todayDate = new Date().toISOString().substring(0, 10);
+export function setupCalendar(buttonFormContainer = undefined) {
+    let todayDate = new Date().toLocaleDateString('en-CA');
     cachedElements.dueDate().min = todayDate;
     if (tasksStorage.getStorageSection() === "today") {
         cachedElements.dueDate().value = todayDate;
-        console.log(new Date().getDay())
+    } else if (tasksStorage.getStorageSection() === "week") {
+        let date = tasksStorage.getEditedTaskCopy()["due_date"];
+        if (buttonFormContainer !== undefined) {
+            date = getSpecificWeekDate(buttonFormContainer);
+        }
+        cachedElements.dueDate().value = date;
     }
+}
+
+function getSpecificWeekDate(buttonFromContainer) {
+    const currentLi = buttonFromContainer.closest('li');
+    const liList = [...cachedElements.todoList().children];
+    let targetIndex = null;
+    liList.forEach((li, index) => {
+        if (li === currentLi) {
+            targetIndex = index;
+        }
+    });
+    return format(selectCurrentWeekDays()[targetIndex], 'yyyy-MM-dd');
 }

@@ -187,10 +187,10 @@ export function displayDueTodayTasks() {
 export function displayThisWeekTasks(dayDate, currentUl) {
     if (tasksStorage.getInbox().length > 0) {
         const thisWeekTasks = storageModerator.sortThisWeekTasks();
-        console.log(currentUl)
-        console.log(dayDate)
         for (let i = 0; i < thisWeekTasks.length; i++) {
+            
             if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {
+                console.log()
                 currentUl.appendChild(displayTask(thisWeekTasks[i]));
             } else if (dayDate >= format(new Date(), 'yyyy-MM-dd')) {
                 if (thisWeekTasks[i]["due_date"] === dayDate) {

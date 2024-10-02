@@ -10,7 +10,6 @@ export function createSection(sectionName = 'inbox') {
     section.classList.add('section', `${sectionName}-section`);
     section.appendChild(getSectionHeader(sectionName));
     section.appendChild(createTodoList(sectionName));
-    tasksStorage.setStorageSection(sectionName);
     return section;
 }
 
@@ -65,7 +64,7 @@ function createThisWeekSection() {
     let overdueSectionNeeded = false;
     for (let i = 0; i < currentWeekDays.length; i++) {
         let deicticDayTerm = '';
-        if ((format(currentWeekDays[i], 'PPP') < format(new Date(), 'PPP'))) {
+        if ((format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd'))) {
             deicticDayTerm = 'day-before';
             createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
             if (overdueSectionNeeded === false) {
@@ -74,12 +73,12 @@ function createThisWeekSection() {
             }
         } else {
             overdueSectionNeeded = false;
-            let subSectionHeading = format(currentWeekDays[i], "d MMM");
+            let subSectionHeading = format(currentWeekDays[i], "d MMM ‧ EEEE");
             if (isToday(currentWeekDays[i])) {
                 deicticDayTerm = 'current-day'
-                subSectionHeading = `${format(currentWeekDays[i], "d MMM")} - Today`;
+                subSectionHeading = `${format(currentWeekDays[i], "d MMM")} ‧ Today ‧ ${format(currentWeekDays[i], "EEEE")}`;
             } else if (isTomorrow(currentWeekDays[i])) {
-                subSectionHeading = `${format(currentWeekDays[i], "d MMM")} - Tomorrow`;
+                subSectionHeading = `${format(currentWeekDays[i], "d MMM")} ‧ Tomorrow ‧ ${format(currentWeekDays[i], "EEEE")}`;
             } 
             createDaySection(currentWeekDays[i] ,subSectionHeading);
         }
@@ -98,7 +97,7 @@ function createDaySection(dayDate, headingName, overdueSectionNeeded = false) {
             toggleCssClass(subSection, headingName.toLowerCase(), `${format(dayDate, "d")}-day-section`);
             toggleCssClass(cachedElements.subTodoList(subSection), `${headingName.toLowerCase()}-list`, `${format(dayDate, "d")}-day-list`)
         }
-        daySectionContainer .appendChild(subSection)
+        daySectionContainer.appendChild(subSection)
         cachedElements.todoList().appendChild(daySectionContainer);
         displayThisWeekTasks(format(dayDate, 'yyyy-MM-dd'), cachedElements.subTodoList(subSection));
     }
