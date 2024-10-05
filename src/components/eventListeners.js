@@ -125,6 +125,7 @@ function editTask() {
     cachedElements.editTaskBtns().forEach((editTaskBtn) => {
         editTaskBtn.addEventListener('click', (e) => {
             openTaskEditor(e.target.closest('li'))
+            controlTextareaHeight();
             validateEditedData();
             closeEditForm();
             submitTaskChanges();

@@ -33,7 +33,7 @@ function cacheElements() {
     const taskForm = () => document.querySelector('.task-form');
     const taskForms = () => document.querySelectorAll('.task-form');
     const inputTitle = () => document.querySelector('input[type="text"]');
-    const taskDescTextarea = () => document.querySelector('.task-form textarea');
+    const taskDescTextarea = () => document.querySelector('.data-form textarea');
 
     const dueDate = () => document.querySelector('#dueDate');
     const subTaskDueDate = (li) => li.querySelector('.optional-info span');
