@@ -297,3 +297,9 @@ li > div + div span {
 .day-before {
     color: gray;
 }
+
+/* Project-related */
+
+.projects .project-title {
+    display: none;
+}

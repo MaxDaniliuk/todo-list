@@ -17,7 +17,7 @@ export function createTaskForm(classEditor = 'task-form') {
         buttonType = 'submit-type';
     }
     taskForm.innerHTML += `
-        <input type="text" name="title" id="title" placeholder="Title">
+        <input type="text" name="title" id="title" placeholder="Title" autocomplete="off">
         <textarea name="description" id="description" placeholder="Description"></textarea>
         <div class="elements-block">
             <input type="date" id="dueDate" name="due_date">
@@ -37,7 +37,7 @@ export function createTaskForm(classEditor = 'task-form') {
 }
 
 export function controlFormDisplay(buttonFormContainer) {
-    buttonFormContainer = buttonFormContainer || ''
+    buttonFormContainer = buttonFormContainer || null;
     if (buttonFormContainer) {
         openTaskForm(buttonFormContainer);
         buttonFormContainer.children[0].remove();
@@ -63,7 +63,7 @@ function openTaskForm(buttonFormContainer) {
 
 export function recreateTaskButton() {
     cachedElements.buttonFormContinaers().forEach((buttonFormContainer) => {
-        if (!buttonFormContainer.hasChildNodes()) { // When cancel, it appends another button at next lis
+        if (!buttonFormContainer.hasChildNodes()) {
             buttonFormContainer.appendChild(createButton({"btnName": "+ Add task", "classList": ["btn", "add-task-btn"]}));
             eventHandler.removeTaskButton();
         }
@@ -74,7 +74,7 @@ function addTaskFormEvents() {
     eventHandler.controlTextareaHeight();
     eventHandler.submitTask();
     eventHandler.closeForm();
-    eventHandler.validateInputTitle();
+    eventHandler.validateInputTitle(cachedElements.btnAddTaskForm());
 }
 
 export function adjustTextareaHeight() {
@@ -82,11 +82,11 @@ export function adjustTextareaHeight() {
     cachedElements.taskDescTextarea().style.height = `${cachedElements.taskDescTextarea().scrollHeight}px`;
 }
 
-export function validateTaskTitle() {
-    if (cachedElements.inputTitle()["name"] === "title" && cachedElements.inputTitle().value.trim() !== '') {
-        cachedElements.btnAddTaskForm().removeAttribute("disabled");
+export function validateTitle(inputTitle, button) {
+    if (inputTitle.value.trim() !== '') {
+        button.removeAttribute("disabled");
     } else {
-        cachedElements.btnAddTaskForm().setAttribute("disabled", true);
+        button.setAttribute("disabled", true);
     }
 }
 

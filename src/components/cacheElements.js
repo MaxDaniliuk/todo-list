@@ -1,3 +1,5 @@
+import { create } from "lodash";
+
 function cacheElements() {
 
     const sideBarContainer = () => document.querySelector('.sidebar-container');
@@ -32,7 +34,7 @@ function cacheElements() {
     const btnsAddTask = () => document.querySelectorAll('.add-task-btn');
     const taskForm = () => document.querySelector('.task-form');
     const taskForms = () => document.querySelectorAll('.task-form');
-    const inputTitle = () => document.querySelector('input[type="text"]');
+    const inputTitles = () => document.querySelectorAll('input[type="text"]');
     const taskDescTextarea = () => document.querySelector('.data-form textarea');
 
     const dueDate = () => document.querySelector('#dueDate');
@@ -52,6 +54,17 @@ function cacheElements() {
     const popup = () => document.querySelector('.popup');
     const popupCancelBtn = () => document.querySelector('.popup-cancel-btn');
     const popupDiscardBtn = () => document.querySelector('.popup-discard-btn');
+
+    const projectsContainer = () => document.querySelector('.projects-container');
+    const addProjectFormBlock = () => document.querySelector('.add-project-block');
+    const addProjectBtn = () => document.querySelector('.add-project-btn');
+    const projectFormContainer = () => document.querySelector('.project-form-container');
+    const createProjectBtn = () => document.querySelector('.create-project-btn');
+    const cancelPojectBtn = () => document.querySelector('.cancel-project-btn');
+    const projectsList = () => document.querySelector('.projects-list');
+    const projectTitle = () => document.querySelector('#projectTitle');
+
+    const projectBtns = () => document.querySelectorAll('.project-btn');
 
     return {
         sideBarContainer,
@@ -85,7 +98,7 @@ function cacheElements() {
         taskForms,
         dueDate,
         subTaskDueDate,
-        inputTitle,
+        inputTitles,
         taskDescTextarea,
         btnAddTaskForm,
         btnCancelForm,
@@ -101,6 +114,15 @@ function cacheElements() {
         popup,
         popupCancelBtn,
         popupDiscardBtn,
+        projectsContainer,
+        addProjectFormBlock,
+        addProjectBtn,
+        projectFormContainer,
+        createProjectBtn,
+        cancelPojectBtn,
+        projectsList,
+        projectTitle,
+        projectBtns,
     };
 }
 

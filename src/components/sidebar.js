@@ -1,5 +1,7 @@
 import { createButton, toggleCssClass } from "./commonFn";
 import { cachedElements } from "./cacheElements";
+import * as eventHandler from "./eventListeners";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function createSideBar() {
     const sidebar = document.createElement('div');
@@ -12,7 +14,8 @@ export default function createSideBar() {
 function createNavBar() {
     const nav = document.createElement('nav');
     nav.classList.add('nav');
-    nav.appendChild(createNavBtnsContainer());
+    nav.appendChild(createNavBtnsList());
+    nav.appendChild(createProjectTab());
     return nav;
 }
 
@@ -37,20 +40,95 @@ function getNavBtnDetails() {
     return navBarComponents;
 }
 
-function createNavBtnsContainer() {
+function createNavBtnsList() {
     const navBtnComponents = getNavBtnDetails();
-    const navUlContainer = document.createElement('div');
-    navUlContainer.classList.add('btns-wrapper');
-    const ul = document.createElement('ul');
-    ul.classList.add('nav-list');
+    const btnsList = document.createElement('ul');
+    btnsList.classList.add('btns-list');
 
     Object.keys(navBtnComponents).forEach(navBtnComponent => {
         let liElement = document.createElement('li');
         liElement.appendChild(createButton(navBtnComponents[navBtnComponent]));
-        ul.appendChild(liElement);
+        btnsList.appendChild(liElement);
     });
-    navUlContainer.appendChild(ul);
-    return navUlContainer;
+    return btnsList;
+}
+
+function createProjectTab() {
+    const projectSectionContainer = document.createElement('div');
+    projectSectionContainer.classList.add('projects-container');
+    projectSectionContainer.textContent = 'Projects';
+    const addProjectBlock = document.createElement('div');
+    addProjectBlock.classList.add('add-project-block');
+    addProjectBlock.appendChild(createButton({"btnName": "+ Add Project", "classList": ["btn", "add-project-btn"]}));
+    projectSectionContainer.appendChild(addProjectBlock);
+    return projectSectionContainer;
+}
+
+function createAddProjectForm() {
+    const projectFormContainer = document.createElement('div');
+    projectFormContainer.classList.add('project-form-container');
+    projectFormContainer.innerHTML += `
+        <input type="text" name="projectName" id="projectTitle" placeholder="Get groceries" maxlength="20" autocomplete="off">
+    `;
+    const buttonContainer = document.createElement('div');
+    buttonContainer.appendChild(createButton({"btnName": "Cancel", "classList": ["btn", "cancel-project-btn"]}));
+    buttonContainer.appendChild(createButton({"btnName": "Create", "classList": ["btn", "create-project-btn", "enabled-btn"]}));
+
+    projectFormContainer.appendChild(buttonContainer);
+    cachedElements.addProjectFormBlock().appendChild(projectFormContainer);
+    cachedElements.createProjectBtn().setAttribute("disabled", true)
+    cachedElements.addProjectBtn().remove();
+    eventHandler.closeProjectForm();
+    eventHandler.addProject();
+}
+
+export function createProject() {
+    let projectTitle = cachedElements.projectTitle().value;
+    let innerType = projectTitle.split(' ').join('-');
+    const projectLi = document.createElement('li');
+    projectLi.dataset.projectId = uuidv4();
+    const buttonsContainer = document.createElement('div');
+
+    const projectButton = createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType});
+    buttonsContainer.appendChild(projectButton);
+    buttonsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
+    // Add a span displaying task count
+    projectLi.appendChild(buttonsContainer);
+    
+    if (!cachedElements.projectsList()) {
+        cachedElements.projectsContainer().appendChild(createProjectsList(projectLi));
+    } else {
+        cachedElements.projectsList().appendChild(projectLi);
+    }
+}
+
+function createProjectsList(firstProjectBtnLi = null) {
+    const projectsUl = document.createElement('ul');
+    projectsUl.classList.add('projects-list');
+    projectsUl.appendChild(firstProjectBtnLi);
+    if (firstProjectBtnLi) return projectsUl;
+    return;
+}
+
+export function switchProjectFormAndBtn() {
+    if (cachedElements.addProjectBtn()) {
+        createAddProjectForm();    
+    } else if (cachedElements.projectFormContainer()) {
+        recreateAddProjectBtn();
+    }
+    eventHandler.validateInputTitle(cachedElements.createProjectBtn());
+}
+
+function recreateAddProjectBtn() {
+    cachedElements.projectFormContainer().remove();
+    cachedElements.addProjectFormBlock().appendChild(createButton({"btnName": "+ Add Project", "classList": ["btn", "add-project-btn"]}));
+    eventHandler.openProjectForm();
+}
+
+export function closeAddProjectForm() {
+    if (cachedElements.projectFormContainer()) {
+        recreateAddProjectBtn();
+    }
 }
 
 function createOpenCloseBtn() {

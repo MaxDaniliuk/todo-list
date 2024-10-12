@@ -1,11 +1,11 @@
 import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
-import { operateSideBar, closeSideBar, resetSideBarStyle } from "./sidebar";
-import { adjustTextareaHeight, controlFormDisplay, validateTaskTitle, closeTaskForm } from "./form.js";
+import { operateSideBar, closeSideBar, resetSideBarStyle, switchProjectFormAndBtn, createProject, closeAddProjectForm } from "./sidebar";
+import { adjustTextareaHeight, controlFormDisplay, validateTitle, closeTaskForm } from "./form.js";
 import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
-import getTaskData, { tasksStorage, storageModerator, selectCurrentWeekDays } from "./tasks";
+import getTaskData, { tasksStorage, storageModerator} from "./tasks";
 import { visualiseTaskData } from "./tasks";
-import { displayInboxTasks, displayDueTodayTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
+import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
 
 //start app 
 export default function startApp() {
@@ -21,15 +21,18 @@ function addEvents() {
     resizeSideBar();
     removeOverlay();
     removeTaskButton();
-    controlNavButtons();
+    differentiateNavButtons();
     removeTask();
     editTask();
-    
+    openProjectForm();
 }
 
 // SideBar-specific event listeners
 export function openCloseSideBar() {
-    cachedElements.sideBarButton().addEventListener('click', operateSideBar);
+    cachedElements.sideBarButton().addEventListener('click', () => {
+        operateSideBar()
+        closeAddProjectForm();
+    });
 }
 
 export function resizeSideBar() {
@@ -41,9 +44,11 @@ export function removeOverlay() {
 }
 
 // Task addition form specific event listeners
-export function validateInputTitle() {
-    cachedElements.inputTitle().addEventListener('input', () => {
-        validateTaskTitle();
+export function validateInputTitle(button) {
+    cachedElements.inputTitles().forEach((inputTitle) => {
+        inputTitle.addEventListener('input', () => {
+            validateTitle(inputTitle, button);
+        });
     });
 }
 
@@ -90,35 +95,71 @@ function removeTask() {
 }
 
 // Section navigation specific event listeners
-function controlNavButtons() {
-    let activeSection = 'inbox';
+function differentiateNavButtons() {
     cachedElements.navBtns().forEach((navBtn) => {
         navBtn.addEventListener('click', () => {
-            if (navBtn.dataset.innerType === "inbox" && activeSection !== "inbox") {
-                activeSection = 'inbox';
-                if (!storageModerator.isSectionOpen(activeSection)) {
-                    switchSection('inbox');
-                    displayInboxTasks();
-                }
-            } else if (navBtn.dataset.innerType === "today" && activeSection !== "today") {
-                activeSection = 'today';
-                if (!storageModerator.isSectionOpen(activeSection)) {
-                    switchSection('today');
-                    displayDueTodayTasks();
-                }
-            } else if (navBtn.dataset.innerType === "week" && activeSection !== "week") {
-                activeSection = 'week';
-                if (!storageModerator.isSectionOpen(activeSection)) {
-                    switchSection('week');
-                    customiseWeekSection();
-                }
-            }
+            selectedSection(navBtn, tasksStorage.getStorageSection());
+            tasksStorage.resetOpenedProjectId();
+        });
+    });
+}
+
+function selectedSection(buttonPressed, activeSection) {
+    let selected = false;
+    if (buttonPressed.dataset.innerType === "inbox" && activeSection !== "inbox") {
+        activeSection = 'inbox';
+        if (!storageModerator.isSectionOpen(activeSection)) {
+            switchSection('inbox');
+            displayInboxTasks();
+            selected = true;
+        }
+    } else if (buttonPressed.dataset.innerType === "today" && activeSection !== "today") {
+        activeSection = 'today';
+        if (!storageModerator.isSectionOpen(activeSection)) {
+            switchSection('today');
+            displayDueTodayTasks();
+            selected = true;
+        }
+    } else if (buttonPressed.dataset.innerType === "week" && activeSection !== "week") {
+        activeSection = 'week';
+        if (!storageModerator.isSectionOpen(activeSection)) {
+            switchSection('week');
+            customiseWeekSection();
+            selected = true;
+        }
+    } else {
+        activeSection = buttonPressed.dataset.innerType;
+        if (!storageModerator.isSectionOpen(activeSection)) {
+            switchSection(activeSection);
+            assignProjectId(buttonPressed.closest('li').dataset.projectId);
+            displayProjectTasks(buttonPressed);
+            selected = true;
+        }
+    }
+
+    function isSectionSelected() {
+        if (selected) {
             tasksStorage.setStorageSection(activeSection);
             removeTask();
             removeTaskButton();
             editTask();
-        })
+        }
+    }
+    isSectionSelected();
+    closeAddProjectForm();
+}
+
+function differentiateProjectButtons() {
+    cachedElements.projectBtns().forEach((projectBtn) => {
+        projectBtn.addEventListener('click', () => {
+            selectedSection(projectBtn, tasksStorage.getStorageSection())
+        });
     });
+}
+
+function assignProjectId(projectId) {
+    tasksStorage.resetOpenedProjectId();
+    tasksStorage.setProjectId(projectId);
 }
 
 function editTask() {
@@ -152,9 +193,7 @@ function validateEditedData() {
             if (e.target === cachedElements.editFormSelect()) {
                 taskCopy[e.target["name"]] = e.target.value;
             };
-            validateTaskEdition();
-            //Here I should enable/disable submit btn - done
-            // It shows the previous dates as well in the edit form calendar... 
+            validateTaskEdition(); 
         });
     }
 }
@@ -175,7 +214,7 @@ function submitTaskChanges() {
 function closeEditForm() {
     cachedElements.editFormCloseBtn().addEventListener('click', (e) => {
         e.preventDefault(); 
-        if (!storageModerator.compareTasks()) { // Are objects equal? 
+        if (!storageModerator.compareTasks()) {
             openPopupMessage();
             continueTaskEdition();
             finishTaskEdition();
@@ -196,7 +235,21 @@ function finishTaskEdition() {
     });
 }
 
+export function openProjectForm() {
+    cachedElements.addProjectBtn().addEventListener('click', switchProjectFormAndBtn)
+}
 
+export function closeProjectForm() {
+    cachedElements.cancelPojectBtn().addEventListener('click', switchProjectFormAndBtn);
+}
+
+export function addProject() {
+    cachedElements.createProjectBtn().addEventListener('click', () => {
+        createProject();
+        switchProjectFormAndBtn();
+        differentiateProjectButtons();
+    });
+}
 
 
 

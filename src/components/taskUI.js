@@ -5,11 +5,12 @@ import { tasksStorage, storageModerator } from "./tasks";
 import { visualiseTaskData } from "./tasks";
 import { format } from "date-fns";
 
-export default function displayTask(taskObj) {
+export default function displayTask(taskObj, buttonInnerType = false) {
     const li = document.createElement('li');
     li.dataset.id = taskObj["taskId"];
 
-    if (taskObj["project"]) {
+
+    if (taskObj.hasOwnProperty("project")) {
         const projectName = document.createElement('p');
         projectName.classList.add('project-title');
         projectName.textContent = `Project: ${taskObj["project"]}`;
@@ -32,13 +33,9 @@ export default function displayTask(taskObj) {
     // Can also adjust background-color + opacity / alpha color
     deleteBtnContainer.appendChild(deleteButton);
     
-    // const titleEditContainer = document.createElement('div');
-    // titleEditContainer.classList.add('task-title-container');
     const title = document.createElement('p');
     title.classList.add('task-title-container');
     title.textContent = taskObj["title"];
-    // titleEditContainer.appendChild(title);
-    // titleEditContainer.appendChild(editButton);
 
     const editBtnContainer = document.createElement('div');
     const editButton = createButton({"btnName": '', "classList": ["btn", "edit-task-btn"]});
@@ -85,7 +82,7 @@ export function closeTaskEditor() {
     cachedElements.modal().remove();
 }
 
-export function validateTaskEdition() { // if equal objects (no changes) yields true
+export function validateTaskEdition() {
     if (!storageModerator.compareTasks()) {
         cachedElements.editFormSubmitBtn().removeAttribute("disabled");
     } else {
@@ -190,7 +187,6 @@ export function displayThisWeekTasks(dayDate, currentUl) {
         for (let i = 0; i < thisWeekTasks.length; i++) {
             
             if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {
-                console.log()
                 currentUl.appendChild(displayTask(thisWeekTasks[i]));
             } else if (dayDate >= format(new Date(), 'yyyy-MM-dd')) {
                 if (thisWeekTasks[i]["due_date"] === dayDate) {
@@ -199,4 +195,15 @@ export function displayThisWeekTasks(dayDate, currentUl) {
             }
         }        
     }
+}
+
+export function displayProjectTasks(buttonPressed) { 
+    let projectId = buttonPressed.closest('li').dataset.projectId;
+    let buttonInnerType = buttonPressed.dataset.innerType;                 
+    if (tasksStorage.getInbox().length > 0) {
+        storageModerator.getProjectTasks(projectId).forEach((taskObj) => {
+            cachedElements.todoList().appendChild(displayTask(taskObj, buttonInnerType));
+        });
+    }
+    cachedElements.todoList().classList.add('projects');
 }

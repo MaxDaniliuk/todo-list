@@ -14,7 +14,10 @@ export default function getTaskData(form) {
     }
     task["taskId"] = uuidv4();
     const currentSection = tasksStorage.getStorageSection();
-    if (currentSection !== "inbox" && currentSection !== "today" && currentSection !== "week") task["project"] = tasksStorage.getStorageSection();
+    if (currentSection !== "inbox" && currentSection !== "today" && currentSection !== "week") {
+        task["project"] = currentSection;
+        task["projectId"] = tasksStorage.getProjectId();
+    }
     tasksStorage.storeTask(task);
     form.reset();
     return task;
@@ -34,19 +37,19 @@ export const tasksStorage = (function() {
         "description": "Gluten-free",
         "due_date": "2024-09-29", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"},
         {
-            "title": "Thursday 03 Oct",
+            "title": "Finish Todo Project backend",
             "description": "first",
-            "due_date": "2024-10-03", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
+            "due_date": "2024-10-12", "priority": "Urgent", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
         },
         {
-            "title": "Sunday 06 Oct",
+            "title": "Sunday 13 Oct",
             "description": "second",
-            "due_date": "2024-10-06", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
+            "due_date": "2024-10-13", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
         },
         {
-            "title": "Monday 30 Sep",
+            "title": "Start doing css",
             "description": "third",
-            "due_date": "2024-09-30", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
+            "due_date": "2024-10-10", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
         },
         ];
     const storeTask = (task) => inbox.push(task);
@@ -59,7 +62,15 @@ export const tasksStorage = (function() {
     const editableTaskCopy = {};
     const getEditedTaskCopy = () => editableTaskCopy;
 
-    return { storeTask, getInbox, setStorageSection, getStorageSection, getEditedTaskCopy }
+    const openedProjectId = [];
+    const getProjectId = () => openedProjectId[0];
+    const setProjectId = (projectId) => { if (openedProjectId.length === 0) openedProjectId.push(projectId) };
+    const resetOpenedProjectId = () => { if (openedProjectId.length !== 0) openedProjectId.splice(0) };
+
+    return { 
+        storeTask, getInbox, setStorageSection, getStorageSection, getEditedTaskCopy,
+        getProjectId, setProjectId, resetOpenedProjectId
+    };
 })();
 
 export const storageModerator = (function() {
@@ -114,7 +125,7 @@ export const storageModerator = (function() {
 
     const getTodayTasks = () => {
         return tasksStorage.getInbox().filter((task) => task["due_date"] === new Date().toLocaleDateString('en-CA'));
-    }; // Output: ['Sep 23, 2024', 'Sep 24, 2024', 'Sep 25, 2024', 'Sep 26, 2024', 'Sep 27, 2024', 'Sep 28, 2024', 'Sep 29, 2024']
+    };
 
     
     const getThisWeekTasks = () => {
@@ -130,35 +141,22 @@ export const storageModerator = (function() {
                 b = b["due_date"].split('-').join('');
                 return a < b ? -1 : a > b ? 1 : 0;
             });
-    }
+    };
+
+    const getProjectTasks = (projectId) => {
+        return tasksStorage.getInbox().filter((task) => task.hasOwnProperty('projectId') && task["projectId"] === projectId);
+    };
     
-    return { getTodayTasks, sortThisWeekTasks, deleteTask, isSectionOpen, copyEditedTask, getEditedTask, compareTasks, clearEditedTaskCopy, updateTask };
+    return { 
+        getTodayTasks, sortThisWeekTasks, deleteTask, 
+        isSectionOpen, copyEditedTask, getEditedTask, 
+        compareTasks, clearEditedTaskCopy, updateTask,
+        getProjectTasks 
+    };
 })();
 
-//################################################# // Leave it here for a certain time
-// Go to taskUI.js
-// function checkOrdinarySection() {
-//     const openSection = tasksStorage.getStorageSection();
-//     if (openSection !== "inbox" || openSection !== "today" || openSection !== "upcoming") return true;
-//     return false;
-// }
 
-// // Go to taskUI.js
-// export function addTask(buttonClicked, taskObject = '') {
-//     let task;
-//     if (buttonClicked === 'add-type') task = tasksStorage.getInbox()[tasksStorage.getInbox().length - 1];
-//     else if (buttonClicked === 'submit-type') task = taskObject
-//     // if inbox, today or upcoming => true
-//     if (checkOrdinarySection()) {
-//         if (tasksStorage.getStorageSection() === 'inbox') {
-//             cachedElements.todoList().appendChild(displayTask(task));
-//         } else if (tasksStorage.getStorageSection() === 'today') {
-//             if (task["due_date"] === new Date().toISOString().substring(0, 10)) {
-//                 cachedElements.todoList().appendChild(displayTask(task));
-//             }
-//         }
-//     }
-// }
+// // Transfer to taskUI.js
 
 export function visualiseTaskData(currentTask, buttonPressed, currentSection = undefined) {
     const currentWeekDays = selectCurrentWeekDays();
@@ -175,8 +173,9 @@ export function visualiseTaskData(currentTask, buttonPressed, currentSection = u
             currentSection = currentTask.closest('section');
         }
         determineButtonFunctionality(buttonPressed, currentTask, cachedElements.closestTodoList(currentSection));
+    } else {
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
     }
-    // Also if dueDate of overdue tasks is postponed, the section remains but empty with Overdue Heading
 }
 
 function determineButtonFunctionality(buttonPressed, currentTask, correctList) {

@@ -13,6 +13,15 @@ export function createSection(sectionName = 'inbox') {
     return section;
 }
 
+export function switchSection(sectionType) {
+    cachedElements.section().remove();
+    let newSection = createSection(sectionType); 
+    // if (sectionType === 'inbox' || sectionType === 'today' || sectionType === 'week') {
+    //     newSection = createSection(sectionType);
+    // }
+    cachedElements.sectionContainer().appendChild(newSection);
+}
+
 function getSectionHeader(sectionHeader) {
     const currentSectionHeader = document.createElement('header');
     currentSectionHeader.classList.add('section-header')
@@ -20,8 +29,10 @@ function getSectionHeader(sectionHeader) {
     sectionHeading.classList.add('section-heading');
     if (sectionHeader === 'week') {
         sectionHeading.textContent = `This ${(sectionHeader.substring(0, 1)).toUpperCase()}${sectionHeader.slice(1)}`;
-    } else {
+    } else if (sectionHeader === 'inbox' || sectionHeader === 'today') {
         sectionHeading.textContent = `${(sectionHeader.substring(0, 1)).toUpperCase()}${sectionHeader.slice(1)}`;
+    } else {
+        sectionHeading.textContent = sectionHeader;
     }
     currentSectionHeader.appendChild(sectionHeading);
 
@@ -38,17 +49,8 @@ function createButtonFormContainer() {
 
 function createTodoList(listType) {
     const todoList = document.createElement('ul');
-    todoList.classList.add(`${listType}-list`);
+    todoList.classList.add(`${listType.toLowerCase()}-list`);
     return todoList;
-}
-
-export function switchSection(sectionType) {
-    cachedElements.section().remove();
-    let newSection = null; 
-    if (sectionType === 'inbox' || sectionType === 'today' || sectionType === 'week') {
-        newSection = createSection(sectionType);
-    }
-    cachedElements.sectionContainer().appendChild(newSection);
 }
 
 export function customiseWeekSection() {
