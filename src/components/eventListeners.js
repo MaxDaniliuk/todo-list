@@ -137,29 +137,17 @@ function selectedSection(buttonPressed, activeSection) {
         }
     }
 
-    function isSectionSelected() {
-        if (selected) {
-            tasksStorage.setStorageSection(activeSection);
-            removeTask();
-            removeTaskButton();
-            editTask();
-        }
+    if (selected) {
+        makeSelectedSectionResponsive(activeSection);
     }
-    isSectionSelected();
     closeAddProjectForm();
 }
 
-function differentiateProjectButtons() {
-    cachedElements.projectBtns().forEach((projectBtn) => {
-        projectBtn.addEventListener('click', () => {
-            selectedSection(projectBtn, tasksStorage.getStorageSection())
-        });
-    });
-}
-
-function assignProjectId(projectId) {
-    tasksStorage.resetOpenedProjectId();
-    tasksStorage.setProjectId(projectId);
+function makeSelectedSectionResponsive(activeSection) {
+    tasksStorage.setStorageSection(activeSection);
+    removeTask();
+    removeTaskButton();
+    editTask();
 }
 
 function editTask() {
@@ -248,9 +236,43 @@ export function addProject() {
         createProject();
         switchProjectFormAndBtn();
         differentiateProjectButtons();
+        deleteProject();
     });
 }
 
+function differentiateProjectButtons() {
+    cachedElements.projectBtns().forEach((projectBtn) => {
+        projectBtn.addEventListener('click', () => {
+            selectedSection(projectBtn, tasksStorage.getStorageSection())
+        });
+    });
+}
+
+function assignProjectId(projectId) {
+    tasksStorage.resetOpenedProjectId();
+    tasksStorage.setProjectId(projectId);
+}
+
+function deleteProject() {
+    cachedElements.removeProjectBtns().forEach((rmProjectBtn) => {
+        rmProjectBtn.addEventListener('click', (e) => {
+            let targetProjectLi = e.target.closest('li');
+            // delete project tasks from inbox
+            storageModerator.deleteProjectTasks(targetProjectLi.dataset.projectId);
+            // remove project Li
+            targetProjectLi.remove()
+            // removoe project section and load inbox (loadPage() fn )
+            switchSection('inbox');
+            displayInboxTasks();
+            makeSelectedSectionResponsive('inbox');
+            // closeAddProjectFrom 
+            closeAddProjectForm();
+
+            // removoe project section and load inbox (loadPage() fn )
+            
+        })
+    });
+}
 
 
 

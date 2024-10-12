@@ -65,6 +65,7 @@ function cacheElements() {
     const projectTitle = () => document.querySelector('#projectTitle');
 
     const projectBtns = () => document.querySelectorAll('.project-btn');
+    const removeProjectBtns = () => document.querySelectorAll('.project-delete-btn');
 
     return {
         sideBarContainer,
@@ -123,6 +124,7 @@ function cacheElements() {
         projectsList,
         projectTitle,
         projectBtns,
+        removeProjectBtns,
     };
 }
 

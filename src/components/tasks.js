@@ -146,12 +146,21 @@ export const storageModerator = (function() {
     const getProjectTasks = (projectId) => {
         return tasksStorage.getInbox().filter((task) => task.hasOwnProperty('projectId') && task["projectId"] === projectId);
     };
+
+    const deleteProjectTasks = (projectId) => {
+        for (let i = 0; i < tasksStorage.getInbox().length; i++) {
+            if (tasksStorage.getInbox()[i]["projectId"] === projectId) {
+                tasksStorage.getInbox().splice(i, 1);
+                i--;
+            }
+        }
+    }
     
     return { 
         getTodayTasks, sortThisWeekTasks, deleteTask, 
         isSectionOpen, copyEditedTask, getEditedTask, 
         compareTasks, clearEditedTaskCopy, updateTask,
-        getProjectTasks 
+        getProjectTasks, deleteProjectTasks 
     };
 })();
 
