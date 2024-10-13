@@ -14,7 +14,15 @@ function toggleCssClass(element, classAdd, classRemove) {
     element.classList.remove(classRemove);
 }
 
+function createTaskCountContainer(id) {
+    let taskCountSpan = document.createElement('span');
+    taskCountSpan.classList.add('task-count');
+    taskCountSpan.dataset.sectionTasks = id;
+    return taskCountSpan;
+}
+
 export { 
     createButton,
     toggleCssClass,
+    createTaskCountContainer
 };

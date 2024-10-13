@@ -250,6 +250,21 @@ li > div + div span {
     flex-grow: 1;
 }
 
+/* nav buttons */
+
+.btns-list li {
+    display: flex;
+    gap: 4px;
+}
+
+.task-count {
+    align-self: center;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    margin-left: auto;
+    text-align: center;
+}
 
 /* Modal */
 
@@ -298,8 +313,14 @@ li > div + div span {
     color: gray;
 }
 
+.day-date span + span {
+    display: inline-block;
+    width: 20px;
+}
+
 /* Project-related */
 
 .projects .project-title {
     display: none;
 }
+

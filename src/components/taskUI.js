@@ -1,11 +1,10 @@
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
 import { createTaskForm, setupCalendar } from "./form";
-import { tasksStorage, storageModerator } from "./tasks";
-import { visualiseTaskData } from "./tasks";
-import { format } from "date-fns";
+import { tasksStorage, storageModerator, selectCurrentWeekDays, taskCountTracker } from "./tasks";
+import { format, isToday } from "date-fns";
 
-export default function displayTask(taskObj, buttonInnerType = false) {
+export default function displayTask(taskObj) {
     const li = document.createElement('li');
     li.dataset.id = taskObj["taskId"];
 
@@ -206,4 +205,51 @@ export function displayProjectTasks(buttonPressed) {
         });
     }
     cachedElements.todoList().classList.add('projects');
+}
+
+export function visualiseTaskData(currentTask, buttonPressed, currentSection = undefined) {
+    const currentWeekDays = selectCurrentWeekDays();
+    let currentTaskDueDate = currentTask;
+    if (currentTask["due_date"] === undefined) {
+        currentTaskDueDate = storageModerator.getEditedTask(currentTask.dataset.id);
+    }
+    if (tasksStorage.getStorageSection() === 'today' && currentTaskDueDate["due_date"] === new Date().toISOString().substring(0, 10)) {
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+    } else if (tasksStorage.getStorageSection() === 'inbox') {
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+    } else if ((tasksStorage.getStorageSection() === 'week') && (currentTaskDueDate["due_date"] >= format(currentWeekDays[0], 'yyyy-MM-dd') && currentTaskDueDate["due_date"] <= format(currentWeekDays[6], 'yyyy-MM-dd'))) {
+        if (currentSection === undefined) {
+            currentSection = currentTask.closest('section');
+        }
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.closestTodoList(currentSection));
+    } else {
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+    }
+    taskCountTracker.countTasks(cachedElements.taskCounts());
+}
+
+function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
+    if (buttonPressed === 'add-type') {
+        return correctList.appendChild(displayTask(currentTask));
+    } else if (buttonPressed === 'submit-type') {
+        if (tasksStorage.getStorageSection() === 'week' && cachedElements.subTaskDueDate(correctList).textContent !== tasksStorage.getEditedTaskCopy()["due_date"]) {
+            let newDate = storageModerator.getEditedTask(currentTask.dataset.id)["due_date"];
+            return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));
+        } else {
+            return correctList.insertBefore(displayTask(tasksStorage.getEditedTaskCopy()), currentTask);
+        }
+    }
+}
+
+function determineCorrectSubsection(taskNewDate) {
+    const currentWeekDays = selectCurrentWeekDays();
+    const weekUlLiSections = [...cachedElements.todoList().children]
+    let todayDateIndex = currentWeekDays.findIndex(date => isToday(date));
+    const days = currentWeekDays.splice(todayDateIndex);
+    const availableUlLiSections = weekUlLiSections.slice(-days.length);
+    for (let i = 0; i < days.length; i++) {
+        if (format(days[i], 'yyyy-MM-dd') === taskNewDate) {
+            return cachedElements.subUl(availableUlLiSections[i]);
+        }
+    }
 }

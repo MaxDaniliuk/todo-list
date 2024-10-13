@@ -1,6 +1,6 @@
 import { cachedElements } from "./cacheElements";
 import { createButton, toggleCssClass } from "./commonFn";
-import { tasksStorage, selectCurrentWeekDays, storageModerator } from "./tasks";
+import { selectCurrentWeekDays, storageModerator } from "./tasks";
 import { displayThisWeekTasks } from "./taskUI";
 import { format, isToday, isTomorrow} from "date-fns";
 
@@ -67,14 +67,17 @@ function createThisWeekSection() {
     let overdueSectionNeeded = false;
     for (let i = 0; i < currentWeekDays.length; i++) {
         let deicticDayTerm = '';
-        if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
-            deicticDayTerm = 'day-before';
-            if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
-            if (overdueSectionNeeded === false && cachedElements.overdueList()) {
-                overdueSectionNeeded = true;
-                cachedElements.subSectionBtnForm().remove();
-            }
-        } 
+        if (thisWeekTasks.length !== 0) {
+            if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
+                deicticDayTerm = 'day-before';
+                console.log(thisWeekTasks.length)
+                if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
+                if (overdueSectionNeeded === false && cachedElements.overdueList()) {
+                    overdueSectionNeeded = true;
+                    cachedElements.subSectionBtnForm().remove();
+                }
+            } 
+        }
         if ((format(currentWeekDays[i], 'yyyy-MM-dd') >= format(new Date(), 'yyyy-MM-dd'))) {
             overdueSectionNeeded = false;
             let subSectionHeading = format(currentWeekDays[i], "d MMM ‧ EEEE");

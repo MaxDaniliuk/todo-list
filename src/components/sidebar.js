@@ -1,7 +1,8 @@
-import { createButton, toggleCssClass } from "./commonFn";
+import { createButton, toggleCssClass, createTaskCountContainer } from "./commonFn";
 import { cachedElements } from "./cacheElements";
 import * as eventHandler from "./eventListeners";
 import { v4 as uuidv4 } from 'uuid';
+import { taskCountTracker } from "./tasks";
 
 export default function createSideBar() {
     const sidebar = document.createElement('div');
@@ -48,6 +49,7 @@ function createNavBtnsList() {
     Object.keys(navBtnComponents).forEach(navBtnComponent => {
         let liElement = document.createElement('li');
         liElement.appendChild(createButton(navBtnComponents[navBtnComponent]));
+        liElement.appendChild(createTaskCountContainer(navBtnComponents[navBtnComponent]["innerType"]));
         btnsList.appendChild(liElement);
     });
     return btnsList;
@@ -92,7 +94,7 @@ export function createProject() {
     const projectButton = createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType});
     buttonsContainer.appendChild(projectButton);
     buttonsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
-    // Add a span displaying task count
+    buttonsContainer.appendChild(createTaskCountContainer(projectLi.dataset.projectId))
     projectLi.appendChild(buttonsContainer);
     
     if (!cachedElements.projectsList()) {
@@ -100,6 +102,7 @@ export function createProject() {
     } else {
         cachedElements.projectsList().appendChild(projectLi);
     }
+    taskCountTracker.addSection(projectLi.dataset.projectId);
 }
 
 function createProjectsList(firstProjectBtnLi = null) {

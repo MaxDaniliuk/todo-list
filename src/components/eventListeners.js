@@ -3,15 +3,15 @@ import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle, switchProjectFormAndBtn, createProject, closeAddProjectForm } from "./sidebar";
 import { adjustTextareaHeight, controlFormDisplay, validateTitle, closeTaskForm } from "./form.js";
 import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
-import getTaskData, { tasksStorage, storageModerator} from "./tasks";
-import { visualiseTaskData } from "./tasks";
-import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges } from "./taskUI.js"
+import getTaskData, { tasksStorage, storageModerator, taskCountTracker} from "./tasks";
+import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges, visualiseTaskData } from "./taskUI.js";
 
 //start app 
 export default function startApp() {
     window.addEventListener('DOMContentLoaded', () => {
         loadPage();
         addEvents();
+        taskCountTracker.countTasks(cachedElements.taskCounts());
         // selectCurrentWeekDays();
     });
 }
@@ -88,6 +88,7 @@ function removeTask() {
         deleteTaskBtn.addEventListener('click', (e) => {
             let targetTask = e.target.closest('li')
             storageModerator.deleteTask(targetTask.dataset.id);
+            taskCountTracker.countTasks(cachedElements.taskCounts());
             targetTask.remove();
             isOverdueSectionEmpty();
         });
@@ -259,6 +260,7 @@ function deleteProject() {
             let targetProjectLi = e.target.closest('li');
             // delete project tasks from inbox
             storageModerator.deleteProjectTasks(targetProjectLi.dataset.projectId);
+            taskCountTracker.removeSection(targetProjectLi.dataset.projectId);
             // remove project Li
             targetProjectLi.remove()
             // removoe project section and load inbox (loadPage() fn )
@@ -269,7 +271,7 @@ function deleteProject() {
             closeAddProjectForm();
 
             // removoe project section and load inbox (loadPage() fn )
-            
+            taskCountTracker.countTasks(cachedElements.taskCounts());
         })
     });
 }

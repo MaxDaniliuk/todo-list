@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import displayTask from './taskUI.js';
-import { cachedElements } from './cacheElements';
 import _ from 'lodash';
-import { endOfISOWeek, startOfISOWeek, eachDayOfInterval, format, isToday } from "date-fns";
+import { endOfISOWeek, startOfISOWeek, eachDayOfInterval, format } from "date-fns";
 
 
 export default function getTaskData(form) {
@@ -23,35 +21,29 @@ export default function getTaskData(form) {
     return task;
 }
 
-
-// description : "Buy groceries"
-// due_date : "2024-09-01"
-// priority : "Normal"
-// taskId : "3ee82357-e4ab-40e7-977d-c33cb65afa2c"
-// title : "Cook dinner"
-
 export const tasksStorage = (function() {
     
-    const inbox = [{"title": "Buy a cookie", 
-        // "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut feugiat sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sit amet tellus sit amet elit consectetur euismod. Sed vehicula auctor cursus. Integer id nunc blandit, viverra nunc vel, ullamcorper turpis. Quisque euismod orci ante. Ut eleifend purus non sem tempus, sed volutpat urna rhoncus. Cras faucibus, ante vel tincidunt mattis, quam quam suscipit velit, non commodo nisi ligula id libero.", 
-        "description": "Gluten-free",
-        "due_date": "2024-09-29", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"},
-        {
-            "title": "Finish Todo Project backend",
-            "description": "first",
-            "due_date": "2024-10-12", "priority": "Urgent", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
-        },
-        {
-            "title": "Sunday 13 Oct",
-            "description": "second",
-            "due_date": "2024-10-13", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
-        },
-        {
-            "title": "Start doing css",
-            "description": "third",
-            "due_date": "2024-10-10", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
-        },
-        ];
+    const inbox = [
+        // {"title": "Buy a cookie", 
+        // // "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut feugiat sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sit amet tellus sit amet elit consectetur euismod. Sed vehicula auctor cursus. Integer id nunc blandit, viverra nunc vel, ullamcorper turpis. Quisque euismod orci ante. Ut eleifend purus non sem tempus, sed volutpat urna rhoncus. Cras faucibus, ante vel tincidunt mattis, quam quam suscipit velit, non commodo nisi ligula id libero.", 
+        // "description": "Gluten-free",
+        // "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"},
+        // {
+        //     "title": "Finish Todo Project backend",
+        //     "description": "first",
+        //     "due_date": "2024-10-14", "priority": "Urgent", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
+        // },
+        // {
+        //     "title": "Sunday 13 Oct",
+        //     "description": "second",
+        //     "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
+        // },
+        // {
+        //     "title": "Start doing css",
+        //     "description": "third",
+        //     "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
+        // },
+    ];
     const storeTask = (task) => inbox.push(task);
     const getInbox = () => inbox;
 
@@ -74,6 +66,8 @@ export const tasksStorage = (function() {
 })();
 
 export const storageModerator = (function() {
+    
+
     const deleteTask = (targetTaskId) => {
         for (let i = 0; i < tasksStorage.getInbox().length; i++) {
             if (tasksStorage.getInbox()[i].taskId === targetTaskId) {
@@ -164,55 +158,61 @@ export const storageModerator = (function() {
     };
 })();
 
+export const taskCountTracker = (function() {
 
-// // Transfer to taskUI.js
+    const sectionTypes = [
+        {
+            "section": "inbox",
+            getCount() {
+                return tasksStorage.getInbox().length;
+            }
+        },
+        {
+            "section": "today",
+            getCount() {
+                return storageModerator.getTodayTasks().length;
+            } 
+        }, 
+        {
+            "section": "week",
+            getCount() {
+                return storageModerator.sortThisWeekTasks().length;
+            }
+        },
+    ]; 
 
-export function visualiseTaskData(currentTask, buttonPressed, currentSection = undefined) {
-    const currentWeekDays = selectCurrentWeekDays();
-    let currentTaskDueDate = currentTask;
-    if (currentTask["due_date"] === undefined) {
-        currentTaskDueDate = storageModerator.getEditedTask(currentTask.dataset.id);
-    }
-    if (tasksStorage.getStorageSection() === 'today' && currentTaskDueDate["due_date"] === new Date().toISOString().substring(0, 10)) {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
-    } else if (tasksStorage.getStorageSection() === 'inbox') {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
-    } else if ((tasksStorage.getStorageSection() === 'week') && (currentTaskDueDate["due_date"] >= format(currentWeekDays[0], 'yyyy-MM-dd') && currentTaskDueDate["due_date"] <= format(currentWeekDays[6], 'yyyy-MM-dd'))) {
-        if (currentSection === undefined) {
-            currentSection = currentTask.closest('section');
+    const addSection = (section) => {
+        sectionTypes.push({
+            section: section,
+            getCount() {
+                return storageModerator.getProjectTasks(this.section).length
+            }
+        })
+    };
+    const removeSection = (section) => {
+        for (let i = 0; i < sectionTypes.length; i++) {
+            if (sectionTypes[i]["section"] === section) {
+                return sectionTypes.splice(i, 1);
+            }
         }
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.closestTodoList(currentSection));
-    } else {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
-    }
-}
+    };
 
-function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
-    if (buttonPressed === 'add-type') {
-        return correctList.appendChild(displayTask(currentTask));
-    } else if (buttonPressed === 'submit-type') {
-        if (tasksStorage.getStorageSection() === 'week' && cachedElements.subTaskDueDate(correctList).textContent !== tasksStorage.getEditedTaskCopy()["due_date"]) {
-            let newDate = storageModerator.getEditedTask(currentTask.dataset.id)["due_date"];
-            return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));
-        } else {
-            return correctList.insertBefore(displayTask(tasksStorage.getEditedTaskCopy()), currentTask);
-        }
+    const countTasks = (countContainers) => {
+        countContainers.forEach((countContainer, index) => {
+            if (sectionTypes[index].getCount() === 0) {
+                countContainer.textContent = '';
+            } else {
+                countContainer.textContent = sectionTypes[index].getCount();
+            }
+        });
     }
-}
 
-
-function determineCorrectSubsection(taskNewDate) {
-    const currentWeekDays = selectCurrentWeekDays();
-    const weekUlLiSections = [...cachedElements.todoList().children]
-    let todayDateIndex = currentWeekDays.findIndex(date => isToday(date));
-    const days = currentWeekDays.splice(todayDateIndex);
-    const availableUlLiSections = weekUlLiSections.slice(-days.length);
-    for (let i = 0; i < days.length; i++) {
-        if (format(days[i], 'yyyy-MM-dd') === taskNewDate) {
-            return cachedElements.subUl(availableUlLiSections[i]);
-        }
-    }
-}
+    return {
+        addSection, 
+        removeSection,
+        countTasks
+    };
+})();
 
 export function selectCurrentWeekDays() {
     const currentWeekDays = eachDayOfInterval({
@@ -221,4 +221,3 @@ export function selectCurrentWeekDays() {
     })
     return currentWeekDays;
 }
-
