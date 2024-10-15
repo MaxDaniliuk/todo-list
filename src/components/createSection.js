@@ -32,7 +32,8 @@ function getSectionHeader(sectionHeader) {
     } else if (sectionHeader === 'inbox' || sectionHeader === 'today') {
         sectionHeading.textContent = `${(sectionHeader.substring(0, 1)).toUpperCase()}${sectionHeader.slice(1)}`;
     } else {
-        sectionHeading.textContent = sectionHeader;
+        if (sectionHeader.includes("-")) sectionHeader = sectionHeader.split("-").join(" ");
+        sectionHeading.textContent = sectionHeader.trim();
     }
     currentSectionHeader.appendChild(sectionHeading);
 
@@ -70,7 +71,6 @@ function createThisWeekSection() {
         if (thisWeekTasks.length !== 0) {
             if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
                 deicticDayTerm = 'day-before';
-                console.log(thisWeekTasks.length)
                 if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
                 if (overdueSectionNeeded === false && cachedElements.overdueList()) {
                     overdueSectionNeeded = true;
