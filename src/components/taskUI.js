@@ -3,6 +3,7 @@ import { createButton } from "./commonFn";
 import { createTaskForm, setupCalendar } from "./form";
 import { tasksStorage, storageModerator, selectCurrentWeekDays, taskCountTracker } from "./tasks";
 import { format, isToday } from "date-fns";
+import { storeDataLocally } from "./localStorage.js";
 
 export default function displayTask(taskObj) {
     const li = document.createElement('li');
@@ -226,6 +227,7 @@ export function visualiseTaskData(currentTask, buttonPressed, currentSection = u
         determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
     }
     taskCountTracker.countTasks(cachedElements.taskCounts());
+    storeDataLocally(tasksStorage.getInbox());
 }
 
 function determineButtonFunctionality(buttonPressed, currentTask, correctList) {

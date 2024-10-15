@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import { endOfISOWeek, startOfISOWeek, eachDayOfInterval, format } from "date-fns";
+import { getDataFromLocalStorage } from "./localStorage.js";
 
 
 export default function getTaskData(form) {
@@ -23,7 +24,7 @@ export default function getTaskData(form) {
 
 export const tasksStorage = (function() {
     
-    const inbox = [
+    let inbox = [
         // {"title": "Buy a cookie", 
         // // "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut feugiat sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sit amet tellus sit amet elit consectetur euismod. Sed vehicula auctor cursus. Integer id nunc blandit, viverra nunc vel, ullamcorper turpis. Quisque euismod orci ante. Ut eleifend purus non sem tempus, sed volutpat urna rhoncus. Cras faucibus, ante vel tincidunt mattis, quam quam suscipit velit, non commodo nisi ligula id libero.", 
         // "description": "Gluten-free",
@@ -44,6 +45,11 @@ export const tasksStorage = (function() {
         //     "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
         // },
     ];
+    // grab inbox from loca storage if it exists
+    const setInbox = () => {
+        inbox = getDataFromLocalStorage() || [];
+    }
+
     const storeTask = (task) => inbox.push(task);
     const getInbox = () => inbox;
 
@@ -61,7 +67,7 @@ export const tasksStorage = (function() {
 
     return { 
         storeTask, getInbox, setStorageSection, getStorageSection, getEditedTaskCopy,
-        getProjectId, setProjectId, resetOpenedProjectId
+        getProjectId, setProjectId, resetOpenedProjectId, setInbox
     };
 })();
 

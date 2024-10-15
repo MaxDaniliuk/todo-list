@@ -78,20 +78,21 @@ function createAddProjectForm() {
 
     projectFormContainer.appendChild(buttonContainer);
     cachedElements.addProjectFormBlock().appendChild(projectFormContainer);
-    cachedElements.createProjectBtn().setAttribute("disabled", true)
+    cachedElements.createProjectBtn().setAttribute("disabled", true);
     cachedElements.addProjectBtn().remove();
     eventHandler.closeProjectForm();
     eventHandler.addProject();
 }
 
-export function createProject() {
-    let projectTitle = cachedElements.projectTitle().value;
+export function createProject(storedProjectData = false) { 
+    let projectTitle = storedProjectData["project"] || cachedElements.projectTitle().value;
     let innerType = projectTitle.split(' ').join('-');
     const projectLi = document.createElement('li');
-    projectLi.dataset.projectId = uuidv4();
+    projectLi.dataset.projectId = storedProjectData["projectId"] || uuidv4();
     const buttonsContainer = document.createElement('div');
 
     const projectButton = createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType});
+    console.log(projectButton)
     buttonsContainer.appendChild(projectButton);
     buttonsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
     buttonsContainer.appendChild(createTaskCountContainer(projectLi.dataset.projectId))
@@ -132,6 +133,12 @@ export function closeAddProjectForm() {
     if (cachedElements.projectFormContainer()) {
         recreateAddProjectBtn();
     }
+}
+
+export function recreateProjectNavBars(sectionData) {
+    createProject(sectionData);
+    eventHandler.differentiateProjectButtons();
+    eventHandler.deleteProject();
 }
 
 function createOpenCloseBtn() {

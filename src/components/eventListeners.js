@@ -5,14 +5,16 @@ import { adjustTextareaHeight, controlFormDisplay, validateTitle, closeTaskForm 
 import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
 import getTaskData, { tasksStorage, storageModerator, taskCountTracker} from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges, visualiseTaskData } from "./taskUI.js";
+import { storeDataLocally, checkStorageForProjects } from "./localStorage.js";
 
 //start app 
 export default function startApp() {
     window.addEventListener('DOMContentLoaded', () => {
+        tasksStorage.setInbox();
         loadPage();
+        checkStorageForProjects();
         addEvents();
         taskCountTracker.countTasks(cachedElements.taskCounts());
-        // selectCurrentWeekDays();
     });
 }
 
@@ -91,6 +93,7 @@ function removeTask() {
             taskCountTracker.countTasks(cachedElements.taskCounts());
             targetTask.remove();
             isOverdueSectionEmpty();
+            storeDataLocally(tasksStorage.getInbox());
         });
     });
 }
@@ -241,7 +244,7 @@ export function addProject() {
     });
 }
 
-function differentiateProjectButtons() {
+export function differentiateProjectButtons() {
     cachedElements.projectBtns().forEach((projectBtn) => {
         projectBtn.addEventListener('click', () => {
             selectedSection(projectBtn, tasksStorage.getStorageSection())
@@ -254,7 +257,7 @@ function assignProjectId(projectId) {
     tasksStorage.setProjectId(projectId);
 }
 
-function deleteProject() {
+export function deleteProject() {
     cachedElements.removeProjectBtns().forEach((rmProjectBtn) => {
         rmProjectBtn.addEventListener('click', (e) => {
             let targetProjectLi = e.target.closest('li');
@@ -272,6 +275,7 @@ function deleteProject() {
 
             // removoe project section and load inbox (loadPage() fn )
             taskCountTracker.countTasks(cachedElements.taskCounts());
+            storeDataLocally(tasksStorage.getInbox());
         })
     });
 }
