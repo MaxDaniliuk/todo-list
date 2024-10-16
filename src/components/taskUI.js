@@ -181,11 +181,14 @@ export function displayDueTodayTasks() {
     }
 }
 
-export function displayThisWeekTasks(dayDate, currentUl) {
+export function displayThisWeekTasks(dayDate, currentUl) { // I can select another time 
     if (tasksStorage.getInbox().length > 0) {
         const thisWeekTasks = storageModerator.sortThisWeekTasks();
+        if (!currentUl.classList.contains("overdue-list")) {
+            currentUl.dataset.date = dayDate;
+            currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
+        }
         for (let i = 0; i < thisWeekTasks.length; i++) {
-            
             if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {
                 currentUl.appendChild(displayTask(thisWeekTasks[i]));
             } else if (dayDate >= format(new Date(), 'yyyy-MM-dd')) {
@@ -232,8 +235,16 @@ export function visualiseTaskData(currentTask, buttonPressed, currentSection = u
 
 function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
     if (buttonPressed === 'add-type') {
-        return correctList.appendChild(displayTask(currentTask));
+        // curretnTask is a todo object
+        if (tasksStorage.getStorageSection() === 'week' && currentTask["due_date"] <= format(selectCurrentWeekDays()[6], 'yyyy-MM-dd')) {
+            let selectedDate = storageModerator.getEditedTask(currentTask["taskId"])["due_date"];
+            
+            return determineCorrectSubsection(selectedDate).appendChild(displayTask(currentTask));
+        } else if (tasksStorage.getStorageSection() !== 'week') {
+            return correctList.appendChild(displayTask(currentTask));
+        }
     } else if (buttonPressed === 'submit-type') {
+        // currentTask is an Li element
         if (tasksStorage.getStorageSection() === 'week' && cachedElements.subTaskDueDate(correctList).textContent !== tasksStorage.getEditedTaskCopy()["due_date"]) {
             let newDate = storageModerator.getEditedTask(currentTask.dataset.id)["due_date"];
             return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));

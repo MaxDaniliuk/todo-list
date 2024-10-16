@@ -98,20 +98,20 @@ export function setupCalendar(buttonFormContainer = undefined) {
     } else if (tasksStorage.getStorageSection() === "week") {
         let date = tasksStorage.getEditedTaskCopy()["due_date"];
         if (buttonFormContainer !== undefined) {
-            date = getSpecificWeekDate(buttonFormContainer);
+            date = cachedElements.subUl(buttonFormContainer.closest('li')).dataset.date;
         }
         cachedElements.dueDate().value = date;
     }
 }
 
-function getSpecificWeekDate(buttonFromContainer) {
-    const currentLi = buttonFromContainer.closest('li');
-    const liList = [...cachedElements.todoList().children];
-    let targetIndex = null;
-    liList.forEach((li, index) => {
-        if (li === currentLi) {
-            targetIndex = index;
-        }
-    });
-    return format(selectCurrentWeekDays()[targetIndex], 'yyyy-MM-dd');
-}
+// function getSpecificWeekDate(buttonFromContainer) {
+//     const currentLi = buttonFromContainer.closest('li');
+//     const liList = [...cachedElements.todoList().children];
+//     let targetIndex = null;
+//     liList.forEach((li, index) => {
+//         if (li === currentLi) {
+//             targetIndex = index;
+//         }
+//     });
+//     return format(selectCurrentWeekDays()[targetIndex], 'yyyy-MM-dd');
+// }
