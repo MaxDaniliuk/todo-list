@@ -6,6 +6,7 @@ import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./cr
 import getTaskData, { tasksStorage, storageModerator, taskCountTracker} from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges, visualiseTaskData } from "./taskUI.js";
 import { storeDataLocally, checkStorageForProjects } from "./localStorage.js";
+import * as dragNDrop from "./dragAndDrop.js";
 
 //start app 
 export default function startApp() {
@@ -27,6 +28,25 @@ function addEvents() {
     removeTask();
     editTask();
     openProjectForm();
+    activateDragNDrop();
+}
+
+function activateDragNDrop() {
+    let liItems = cachedElements.draggableListItems();
+    liItems.forEach((liItem) => {
+        liItem.addEventListener('dragstart', dragNDrop.handleDragStart);
+        liItem.addEventListener('dragover', dragNDrop.handleDragOver);
+        liItem.addEventListener('dragenter', dragNDrop.handleDragEnter);
+        liItem.addEventListener('dragleave', dragNDrop.handleDragLeave);
+        liItem.addEventListener('dragend', dragNDrop.handleDragEnd);
+        liItem.addEventListener('drop', dragNDrop.handleItemDrop);
+    });
+
+    let dropZones = cachedElements.dropzoneUlLists();
+    dropZones.forEach((dropZone) => {
+        dropZone.addEventListener('dragover', dragNDrop.handleDragOver);
+        dropZone.addEventListener('drop', dragNDrop.handleDropzoneDrop);
+    });
 }
 
 // SideBar-specific event listeners
@@ -82,6 +102,7 @@ export function submitTask() {
         removeTask();
         editTask();
         controlFormDisplay();
+        activateDragNDrop();
     });
 }
 
@@ -145,6 +166,7 @@ function selectedSection(buttonPressed, activeSection) {
         makeSelectedSectionResponsive(activeSection);
     }
     closeAddProjectForm();
+    if (window.innerWidth <= 480) closeSideBar();
 }
 
 function makeSelectedSectionResponsive(activeSection) {
@@ -152,6 +174,7 @@ function makeSelectedSectionResponsive(activeSection) {
     removeTask();
     removeTaskButton();
     editTask();
+    activateDragNDrop();
 }
 
 function editTask() {
@@ -199,6 +222,7 @@ function submitTaskChanges() {
             removeTask();
             editTask();
             isOverdueSectionEmpty();
+            activateDragNDrop();
         }
     });
 }

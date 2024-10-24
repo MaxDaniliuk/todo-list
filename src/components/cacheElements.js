@@ -68,6 +68,10 @@ function cacheElements() {
     const removeProjectBtns = () => document.querySelectorAll('.project-delete-btn');
     const taskCounts = () => document.querySelectorAll('.task-count');
 
+    const draggableListItems = () => [...document.querySelectorAll('.draggable')];
+    const notDraggableListItems = () => [...document.querySelectorAll('.draggable:not(.dragging)')];
+    const draggingItem = () => document.querySelector('.dragging');
+    const dropzoneUlLists = () => [...document.querySelectorAll('.dropzone')];
     return {
         sideBarContainer,
         sideBar,
@@ -126,7 +130,11 @@ function cacheElements() {
         projectTitle,
         projectBtns,
         removeProjectBtns,
-        taskCounts
+        taskCounts,
+        draggableListItems,
+        notDraggableListItems,
+        draggingItem,
+        dropzoneUlLists
     };
 }
 

@@ -92,7 +92,6 @@ export function createProject(storedProjectData = false) {
     const buttonsContainer = document.createElement('div');
 
     const projectButton = createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType});
-    console.log(projectButton)
     buttonsContainer.appendChild(projectButton);
     buttonsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
     buttonsContainer.appendChild(createTaskCountContainer(projectLi.dataset.projectId))

@@ -175,10 +175,20 @@ ul {
 
 /* Todo Li */
 
+section ul {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .section li {
     outline: none;
-    border-bottom: 1px solid #eee;
+    /* border-bottom: 1px solid #eee; */
     padding: 8px 0;
+}
+
+.draggable {
+    border-bottom: 1px solid #eee;
 }
 
 .week-list > li {
@@ -324,3 +334,23 @@ li > div + div span {
     display: none;
 }
 
+/* Drag n Drop style */
+
+/* 
+1. Make opacity transition from 1 (default) to 0 (invisisble)
+2. When opacity 0 - display: none to hide an li while dragging
+*/
+
+.draggable {
+    cursor: move;
+    user-select: none;
+}
+
+.over {
+    border: 2px dotted #666;
+}
+
+.dropzone {
+    min-height: 50px; 
+    /* Check how to add to narrow 0px - 1px dropzone, is it possible at all?  */
+}

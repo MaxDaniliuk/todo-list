@@ -8,7 +8,8 @@ import { storeDataLocally } from "./localStorage.js";
 export default function displayTask(taskObj) {
     const li = document.createElement('li');
     li.dataset.id = taskObj["taskId"];
-
+    li.setAttribute('draggable', true);
+    li.classList.add('draggable');
 
     if (taskObj.hasOwnProperty("project")) {
         const projectName = document.createElement('p');
@@ -171,6 +172,7 @@ export function displayInboxTasks() {
             cachedElements.todoList().appendChild(displayTask(taskObj));
         });
     }
+    cachedElements.todoList().classList.add('dropzone');
 }
 
 export function displayDueTodayTasks() {
@@ -179,11 +181,13 @@ export function displayDueTodayTasks() {
             cachedElements.todoList().appendChild(displayTask(taskObj));
         });
     }
+    cachedElements.todoList().classList.add('dropzone');
 }
 
 export function displayThisWeekTasks(dayDate, currentUl) { // I can select another time 
     if (tasksStorage.getInbox().length > 0) {
         const thisWeekTasks = storageModerator.sortThisWeekTasks();
+        currentUl.classList.add('dropzone')
         if (!currentUl.classList.contains("overdue-list")) {
             currentUl.dataset.date = dayDate;
             currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
@@ -208,7 +212,7 @@ export function displayProjectTasks(buttonPressed) {
             cachedElements.todoList().appendChild(displayTask(taskObj, buttonInnerType));
         });
     }
-    cachedElements.todoList().classList.add('projects');
+    cachedElements.todoList().classList.add('projects', 'dropzone');
 }
 
 export function visualiseTaskData(currentTask, buttonPressed, currentSection = undefined) {

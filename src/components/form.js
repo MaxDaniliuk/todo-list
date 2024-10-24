@@ -1,8 +1,7 @@
 import * as eventHandler from "./eventListeners";
 import { cachedElements } from "./cacheElements";
 import { createButton } from "./commonFn";
-import { tasksStorage, selectCurrentWeekDays } from "./tasks";
-import { format } from "date-fns";
+import { tasksStorage } from "./tasks";
 
 
 export function createTaskForm(classEditor = 'task-form') {
