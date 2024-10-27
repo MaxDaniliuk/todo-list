@@ -24,27 +24,7 @@ export default function getTaskData(form) {
 
 export const tasksStorage = (function() {
     
-    let inbox = [
-        // {"title": "Buy a cookie", 
-        // // "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut feugiat sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sit amet tellus sit amet elit consectetur euismod. Sed vehicula auctor cursus. Integer id nunc blandit, viverra nunc vel, ullamcorper turpis. Quisque euismod orci ante. Ut eleifend purus non sem tempus, sed volutpat urna rhoncus. Cras faucibus, ante vel tincidunt mattis, quam quam suscipit velit, non commodo nisi ligula id libero.", 
-        // "description": "Gluten-free",
-        // "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a9"},
-        // {
-        //     "title": "Finish Todo Project backend",
-        //     "description": "first",
-        //     "due_date": "2024-10-14", "priority": "Urgent", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a8"
-        // },
-        // {
-        //     "title": "Sunday 13 Oct",
-        //     "description": "second",
-        //     "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a7"
-        // },
-        // {
-        //     "title": "Start doing css",
-        //     "description": "third",
-        //     "due_date": "2024-10-14", "priority": "High", "taskId": "db3d4311-2d4c-4c1d-9f71-0f662786f5a6"
-        // },
-    ];
+    let inbox = [];
     // grab inbox from loca storage if it exists
     const setInbox = () => {
         inbox = getDataFromLocalStorage() || [];

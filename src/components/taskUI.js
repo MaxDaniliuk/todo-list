@@ -181,16 +181,21 @@ export function displayDueTodayTasks() {
             cachedElements.todoList().appendChild(displayTask(taskObj));
         });
     }
+    console.log('TODAY Section')
+    console.log(tasksStorage.getInbox())
+    console.log(storageModerator.getTodayTasks())
     cachedElements.todoList().classList.add('dropzone');
 }
 
 export function displayThisWeekTasks(dayDate, currentUl) { // I can select another time 
     if (tasksStorage.getInbox().length > 0) {
         const thisWeekTasks = storageModerator.sortThisWeekTasks();
-        currentUl.classList.add('dropzone')
-        if (!currentUl.classList.contains("overdue-list")) {
+        
+        // !currentUl.classList.contains("overdue-list")
+        if (!currentUl.dataset.overdue) {
             currentUl.dataset.date = dayDate;
             currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
+            currentUl.classList.add('dropzone');
         }
         for (let i = 0; i < thisWeekTasks.length; i++) {
             if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {

@@ -102,7 +102,8 @@ function createDaySection(dayDate, headingName, overdueSectionNeeded = false) {
         cachedElements.subSectionHeading(subSection).textContent = headingName;
         if (headingName === 'Overdue') {
             toggleCssClass(subSection, headingName.toLowerCase(), `${format(dayDate, "d")}-day-section`);
-            toggleCssClass(cachedElements.subTodoList(subSection), `${headingName.toLowerCase()}-list`, `${format(dayDate, "d")}-day-list`)
+            toggleCssClass(cachedElements.subTodoList(subSection), `${headingName.toLowerCase()}-list`, `${format(dayDate, "d")}-day-list`);
+            cachedElements.subTodoList(subSection).dataset.overdue = "overdue";
         }
         daySectionContainer.appendChild(subSection)
         cachedElements.todoList().appendChild(daySectionContainer);

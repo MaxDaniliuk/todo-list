@@ -35,7 +35,7 @@ function activateDragNDrop() {
     let liItems = cachedElements.draggableListItems();
     liItems.forEach((liItem) => {
         liItem.addEventListener('dragstart', dragNDrop.handleDragStart);
-        liItem.addEventListener('dragover', dragNDrop.handleDragOver);
+        liItem.addEventListener('dragover', dragNDrop.handleItemDragOver);
         liItem.addEventListener('dragenter', dragNDrop.handleDragEnter);
         liItem.addEventListener('dragleave', dragNDrop.handleDragLeave);
         liItem.addEventListener('dragend', dragNDrop.handleDragEnd);
@@ -44,9 +44,21 @@ function activateDragNDrop() {
 
     let dropZones = cachedElements.dropzoneUlLists();
     dropZones.forEach((dropZone) => {
-        dropZone.addEventListener('dragover', dragNDrop.handleDragOver);
+        if (dropZone.closest('li')) {
+            dropZone.closest('li').addEventListener('dragover', dragNDrop.handleDropAreaDragOver);
+            dropZone.closest('li').addEventListener('dragleave', dragNDrop.handleDropAreaDragLeave);
+        }
+        dropZone.addEventListener('dragover', dragNDrop.handleDropzoneDragOver);
         dropZone.addEventListener('drop', dragNDrop.handleDropzoneDrop);
     });
+}
+
+
+export function highlightDropArea(dropzone) {
+        dropzone.closest('li').addEventListener('mouseout', () => {
+            console.log('mouseout');
+            dropzone.classList.remove('over-dropzone');
+        });
 }
 
 // SideBar-specific event listeners

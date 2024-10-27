@@ -1,9 +1,7 @@
-// https://stackoverflow.com/questions/44920180/drag-li-between-two-ul-js-without-jquery
-
-// applies to li
 import { cachedElements } from "./cacheElements";
 import * as eventHandler from "./eventListeners";
 import { isOverdueSectionEmpty } from "./createSection";
+import { storageModerator } from "./tasks";
 
 const draggedElement = (function() {
     let draggedItem = null;
@@ -22,9 +20,6 @@ export function handleDragStart(e) {
     draggedElement.setDraggedEl(this);
     e.dataTransfer.clearData();
     e.dataTransfer.effectAllowed = 'move';
-    
-    // console.log(this, 'start dragging')
-    //
 }
 
 export function handleDragEnd(e) {
@@ -33,36 +28,48 @@ export function handleDragEnd(e) {
     cachedElements.draggableListItems().forEach((liItem) => {
         liItem.classList.remove('over');
     });
-
+    cachedElements.dropzoneUlLists().forEach((dropzone) => {
+        dropzone.classList.remove('over-dropzone');
+    });
+    draggedElement.resetDraggedEl();
 }
 
-export function handleDragOver(e) {
+export function handleItemDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    // this.classList.add('over'); 
-    //Fires lots of time...
+    if (this !== draggedElement.getDraggedEl()) {
+        this.classList.add('over'); 
+    }
+    // make dragover react to copy size not mouse cursor
     return false;
 }
 
 export function handleDragEnter(e) {
-    this.classList.add('over');
+    if (this !== draggedElement.getDraggedEl()) {
+        this.classList.add('over');
+    }
 }
 
 export function handleDragLeave(e) {
-    this.classList.remove('over');
+    if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('over');
+    }
 }
 
 export function handleItemDrop(e) {
     e.preventDefault();
-
     if (e.stopPropagation) {
         e.stopPropagation(); 
     }
     
     const draggedEl = draggedElement.getDraggedEl();
     const draggedElLocation = draggedEl.parentNode;
-    const dropTargetOffset = e.clientY;
     const dropzone = this.parentNode;
+
+    if (dropzone.dataset.overdue && dropzone !== draggedElLocation) return;
+
+    const dropTargetOffset = e.clientY;
+    
     const {
         top,
         height
@@ -77,12 +84,16 @@ export function handleItemDrop(e) {
    
     if (dropzone !== draggedElLocation) {
         if (dropzone.dataset.date) {
-            let dueDate = cachedElements.subTaskDueDate(draggedEl);
-            dueDate.textContent = dropzone.dataset.date;
-            
+            updateTaskDate(draggedEl, dropzone);
         }
         isOverdueSectionEmpty();
     }
+    return false;
+}
+
+export function handleDropzoneDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
     return false;
 }
 
@@ -92,11 +103,43 @@ export function handleDropzoneDrop(e) {
     if (e.stopPropagation) {
         e.stopPropagation(); 
     }
-
     if (e.currentTarget.children.length === 0) {
         e.currentTarget.appendChild(draggedElement.getDraggedEl());
-        console.log('dropzone drop fn call')
+        updateTaskDate(draggedElement.getDraggedEl(), this);
         return;
+    }
+    return false;
+}
+
+// updateTaskDate(draggedEl.dataset.id, dropzone.dataset.date);
+
+function updateTaskDate(draggedEl, dropzone) {
+    let taskId = draggedEl.dataset.id;
+    let newDate = dropzone.dataset.date;
+    let dueDate = cachedElements.subTaskDueDate(draggedEl);
+    dueDate.textContent = newDate;
+    storageModerator.getEditedTask(taskId)["due_date"] = newDate;
+}
+
+export function handleDropAreaDragOver(e) {
+    e.preventDefault();
+    const dropzone = cachedElements.subUl(this);
+    
+    if (dropzone.children.length === 0) {
+        console.log('over')
+        dropzone.classList.add('over-dropzone');
+    }
+}
+// 
+
+export function handleDropAreaDragLeave(e) {
+    
+    const dropzone = cachedElements.subUl(this);
+    if (!dropzone.contains(e.relatedTarget)) {
+        if (dropzone.children.length === 0) {
+            console.log('called');
+            dropzone.classList.remove('over-dropzone');
+        }
     }
     return false;
 }
