@@ -253,11 +253,14 @@ function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
             return correctList.appendChild(displayTask(currentTask));
         }
     } else if (buttonPressed === 'submit-type') {
-        // currentTask is an Li element
-        if (tasksStorage.getStorageSection() === 'week' && cachedElements.subTaskDueDate(correctList).textContent !== tasksStorage.getEditedTaskCopy()["due_date"]) {
-            let newDate = storageModerator.getEditedTask(currentTask.dataset.id)["due_date"];
-            return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));
+        // currentTask is an Li UI task
+        if (tasksStorage.getStorageSection() === 'week' && cachedElements.subTaskDueDate(currentTask).textContent !== tasksStorage.getEditedTaskCopy()["due_date"]) {
+            if (tasksStorage.getEditedTaskCopy()["due_date"] <= format(selectCurrentWeekDays()[6], 'yyyy-MM-dd')) {
+                let newDate = storageModerator.getEditedTask(currentTask.dataset.id)["due_date"];
+                return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));
+            }
         } else {
+            console.log('2')
             return correctList.insertBefore(displayTask(tasksStorage.getEditedTaskCopy()), currentTask);
         }
     }
