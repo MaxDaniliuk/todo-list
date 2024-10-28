@@ -1,7 +1,6 @@
 import { cachedElements } from "./cacheElements";
-import * as eventHandler from "./eventListeners";
 import { isOverdueSectionEmpty } from "./createSection";
-import { storageModerator } from "./tasks";
+import { storageModerator, taskCountTracker } from "./tasks";
 
 const draggedElement = (function() {
     let draggedItem = null;
@@ -32,6 +31,7 @@ export function handleDragEnd(e) {
         dropzone.classList.remove('over-dropzone');
     });
     draggedElement.resetDraggedEl();
+    taskCountTracker.countTasks(cachedElements.taskCounts());
 }
 
 export function handleItemDragOver(e) {
@@ -40,7 +40,6 @@ export function handleItemDragOver(e) {
     if (this !== draggedElement.getDraggedEl()) {
         this.classList.add('over'); 
     }
-    // make dragover react to copy size not mouse cursor
     return false;
 }
 
@@ -111,8 +110,6 @@ export function handleDropzoneDrop(e) {
     return false;
 }
 
-// updateTaskDate(draggedEl.dataset.id, dropzone.dataset.date);
-
 function updateTaskDate(draggedEl, dropzone) {
     let taskId = draggedEl.dataset.id;
     let newDate = dropzone.dataset.date;
@@ -130,7 +127,6 @@ export function handleDropAreaDragOver(e) {
         dropzone.classList.add('over-dropzone');
     }
 }
-// 
 
 export function handleDropAreaDragLeave(e) {
     
