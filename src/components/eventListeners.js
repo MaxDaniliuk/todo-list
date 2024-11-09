@@ -26,33 +26,78 @@ function addEvents() {
     removeTaskButton();
     differentiateNavButtons();
     removeTask();
+    changeDeleteBtnBg();
     editTask();
     openProjectForm();
     activateDragNDrop();
+    controlDropDownMenu();
+    expandDescription();
 }
 
 function activateDragNDrop() {
     let liItems = cachedElements.draggableListItems();
     liItems.forEach((liItem) => {
-        liItem.addEventListener('dragstart', dragNDrop.handleDragStart);
-        liItem.addEventListener('dragover', dragNDrop.handleItemDragOver);
-        liItem.addEventListener('dragenter', dragNDrop.handleDragEnter);
-        liItem.addEventListener('dragleave', dragNDrop.handleDragLeave);
-        liItem.addEventListener('dragend', dragNDrop.handleDragEnd);
-        liItem.addEventListener('drop', dragNDrop.handleItemDrop);
+        if (liItem.getAttribute('listenerOnDragNDrop') !== 'true') {
+            liItem.addEventListener('dragstart', (e) => {
+                addDescriptionNoNExpandedClass(e.currentTarget);
+                dragNDrop.handleDragStart.call(e.currentTarget, e);
+            });
+            liItem.addEventListener('dragover', dragNDrop.handleItemDragOver);
+            liItem.addEventListener('dragenter', dragNDrop.handleDragEnter);
+            liItem.addEventListener('dragleave', dragNDrop.handleDragLeave);
+            liItem.addEventListener('dragend', dragNDrop.handleDragEnd);
+            liItem.addEventListener('drop', dragNDrop.handleItemDrop);
+        }
+        liItem.setAttribute('listenerOnDragNDrop', 'true');
     });
 
     let dropZones = cachedElements.dropzoneUlLists();
     dropZones.forEach((dropZone) => {
-        if (dropZone.closest('li')) {
-            dropZone.closest('li').addEventListener('dragover', dragNDrop.handleDropAreaDragOver);
-            dropZone.closest('li').addEventListener('dragleave', dragNDrop.handleDropAreaDragLeave);
+        if (dropZone.getAttribute('listenerOnDropzone') !== 'true') {
+            if (dropZone.closest('li')) {
+                dropZone.closest('li').addEventListener('dragover', dragNDrop.handleDropAreaDragOver);
+                dropZone.closest('li').addEventListener('dragleave', dragNDrop.handleDropAreaDragLeave);
+            }
+            dropZone.addEventListener('dragover', dragNDrop.handleDropzoneDragOver);
+            dropZone.addEventListener('drop', dragNDrop.handleDropzoneDrop);
         }
-        dropZone.addEventListener('dragover', dragNDrop.handleDropzoneDragOver);
-        dropZone.addEventListener('drop', dragNDrop.handleDropzoneDrop);
+        dropZone.setAttribute('listenerOnDropzone', 'true');
     });
 }
 
+function controlDropDownMenu() {
+    cachedElements.dropDownBtn().addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropDown();
+    });
+}
+
+function toggleDropDown() {
+    cachedElements.projectsContainer().classList.toggle("show");
+    cachedElements.dropDownBtn().classList.toggle("arrow");
+}
+
+function expandDescription() {
+    let descriptions = [...cachedElements.taskDescriptionPs()];
+    if (descriptions.length !== 0) {
+        descriptions.forEach((description) => {
+            if (description && description.getAttribute('listenerOnDescExpansion') !== "true") {
+                description.addEventListener('click', () => {
+                    description.classList.toggle('non-expanded-desc');
+                    description.classList.toggle('expanded-desc');
+                });
+                description.setAttribute('listenerOnDescExpansion', "true");
+            }
+        });
+    }
+}
+
+function addDescriptionNoNExpandedClass(currentLi) {
+    if (cachedElements.currentTaskDescriptionP(currentLi).textContent.trim() !== '') {
+        cachedElements.currentTaskDescriptionP(currentLi).classList.add('non-expanded-desc');
+        cachedElements.currentTaskDescriptionP(currentLi).classList.remove('expanded-desc');
+    }
+}
 
 export function highlightDropArea(dropzone) {
         dropzone.closest('li').addEventListener('mouseout', () => {
@@ -112,22 +157,27 @@ export function submitTask() {
         e.preventDefault();
         visualiseTaskData(getTaskData(e.target.closest('form')), e.target.dataset.buttonType, e.target.closest('section'));
         removeTask();
+        changeDeleteBtnBg()
         editTask();
         controlFormDisplay();
         activateDragNDrop();
+        expandDescription();
     });
 }
 
 function removeTask() {
     cachedElements.deleteTaskBtns().forEach((deleteTaskBtn) => {
-        deleteTaskBtn.addEventListener('click', (e) => {
-            let targetTask = e.target.closest('li')
-            storageModerator.deleteTask(targetTask.dataset.id);
-            taskCountTracker.countTasks(cachedElements.taskCounts());
-            targetTask.remove();
-            isOverdueSectionEmpty();
-            storeDataLocally(tasksStorage.getInbox());
-        });
+        if (deleteTaskBtn.getAttribute('listenerOnDeleteBtn') !== 'true') {
+            deleteTaskBtn.addEventListener('click', (e) => {
+                let targetTask = e.target.closest('li')
+                storageModerator.deleteTask(targetTask.dataset.id);
+                taskCountTracker.countTasks(cachedElements.taskCounts());
+                targetTask.remove();
+                isOverdueSectionEmpty();
+                storeDataLocally(tasksStorage.getInbox());
+            });
+            deleteTaskBtn.setAttribute('listenerOnDeleteBtn', 'true');
+        }
     });
 }
 
@@ -153,7 +203,7 @@ function selectedSection(buttonPressed, activeSection) {
     } else if (buttonPressed.dataset.innerType === "today" && activeSection !== "today") {
         activeSection = 'today';
         if (!storageModerator.isSectionOpen(activeSection)) {
-            switchSection('today');
+            switchSection('today'); // 
             displayDueTodayTasks();
             selected = true;
         }
@@ -184,23 +234,29 @@ function selectedSection(buttonPressed, activeSection) {
 function makeSelectedSectionResponsive(activeSection) {
     tasksStorage.setStorageSection(activeSection);
     removeTask();
+    changeDeleteBtnBg()
     removeTaskButton();
     editTask();
     activateDragNDrop();
+    expandDescription();
 }
 
 function editTask() {
     cachedElements.editTaskBtns().forEach((editTaskBtn) => {
-        editTaskBtn.addEventListener('click', (e) => {
-            openTaskEditor(e.target.closest('li'))
-            controlTextareaHeight();
-            validateEditedData();
-            closeEditForm();
-            submitTaskChanges();
-            if (cachedElements.taskForm()) {
-                closeTaskForm();
-            }
-        });
+        if (editTaskBtn.getAttribute('listenerOnEditBtn') !== 'true') {
+            editTaskBtn.addEventListener('click', (e) => {
+                openTaskEditor(e.target.closest('li'));
+                console.log('editing')
+                controlTextareaHeight();
+                validateEditedData();
+                closeEditForm();
+                submitTaskChanges();
+                if (cachedElements.taskForm()) {
+                    closeTaskForm();
+                }
+            });
+            editTaskBtn.setAttribute('listenerOnEditBtn', 'true');
+        }
     });
 }
 
@@ -232,9 +288,11 @@ function submitTaskChanges() {
             applyChanges(e.target.dataset.buttonType) 
             closeTaskEditor();
             removeTask();
+            changeDeleteBtnBg()
             editTask();
             isOverdueSectionEmpty();
             activateDragNDrop();
+            expandDescription();
         }
     });
 }
@@ -257,7 +315,6 @@ function continueTaskEdition() {
 }
 
 function finishTaskEdition() {
-    // Do you need to delete a copy here? 
     cachedElements.popupDiscardBtn().addEventListener('click', () => {
         discardTaskChanges();
     });
@@ -282,9 +339,12 @@ export function addProject() {
 
 export function differentiateProjectButtons() {
     cachedElements.projectBtns().forEach((projectBtn) => {
-        projectBtn.addEventListener('click', () => {
-            selectedSection(projectBtn, tasksStorage.getStorageSection())
-        });
+        if (projectBtn.getAttribute('listenerOnProjectOpen') !== 'true') {
+            projectBtn.addEventListener('click', () => {
+                selectedSection(projectBtn, tasksStorage.getStorageSection())
+            });
+            projectBtn.setAttribute('listenerOnProjectOpen', 'true');
+        }
     });
 }
 
@@ -295,26 +355,47 @@ function assignProjectId(projectId) {
 
 export function deleteProject() {
     cachedElements.removeProjectBtns().forEach((rmProjectBtn) => {
-        rmProjectBtn.addEventListener('click', (e) => {
-            let targetProjectLi = e.target.closest('li');
-            // delete project tasks from inbox
-            storageModerator.deleteProjectTasks(targetProjectLi.dataset.projectId);
-            taskCountTracker.removeSection(targetProjectLi.dataset.projectId);
-            // remove project Li
-            targetProjectLi.remove()
-            // removoe project section and load inbox (loadPage() fn )
-            switchSection('inbox');
-            displayInboxTasks();
-            makeSelectedSectionResponsive('inbox');
-            // closeAddProjectFrom 
-            closeAddProjectForm();
-
-            // removoe project section and load inbox (loadPage() fn )
-            taskCountTracker.countTasks(cachedElements.taskCounts());
-            storeDataLocally(tasksStorage.getInbox());
-        })
+        if (rmProjectBtn.getAttribute('listenerOnProjectRm') !== 'true') {
+            rmProjectBtn.addEventListener('click', (e) => {
+                let targetProjectLi = e.target.closest('li');
+                // delete project tasks from inbox
+                storageModerator.deleteProjectTasks(targetProjectLi.dataset.projectId);
+                taskCountTracker.removeSection(targetProjectLi.dataset.projectId);
+                // remove project Li
+                targetProjectLi.remove()
+                // removoe project section and load inbox (loadPage() fn )
+                switchSection('inbox');
+                displayInboxTasks();
+                makeSelectedSectionResponsive('inbox');
+                // closeAddProjectFrom 
+                closeAddProjectForm();
+    
+                // removoe project section and load inbox (loadPage() fn )
+                taskCountTracker.countTasks(cachedElements.taskCounts());
+                storeDataLocally(tasksStorage.getInbox());
+            });
+            rmProjectBtn.setAttribute('listenerOnProjectRm', 'true');
+        }
     });
 }
 
-
-
+function changeDeleteBtnBg() {
+    cachedElements.deleteTaskBtns().forEach((deleteTaskBtn) => {
+        if (deleteTaskBtn.getAttribute('listenerOnColorChange') !== 'true') {
+            let btnBgColor = null;
+            const btnBgSpan = cachedElements.deleteTaskBtnSpan(deleteTaskBtn);
+            deleteTaskBtn.addEventListener('mouseenter', () => {
+                let btnBorderColor = window.getComputedStyle(deleteTaskBtn).getPropertyValue("border-color");
+                btnBgColor = window.getComputedStyle(btnBgSpan).getPropertyValue("background-color");
+                deleteTaskBtn.style.backgroundColor = `${btnBorderColor}`;
+                btnBgSpan.style.backgroundColor = `${btnBorderColor}`;
+            });
+            deleteTaskBtn.addEventListener('mouseleave', () => {
+                btnBgSpan.style.backgroundColor = `${btnBgColor}`;
+                deleteTaskBtn.style.backgroundColor = `${btnBgColor}`;
+                btnBgColor = null;
+            });
+            deleteTaskBtn.setAttribute('listenerOnColorChange', 'true');
+        }
+    });
+}

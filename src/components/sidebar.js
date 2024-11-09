@@ -1,4 +1,4 @@
-import { createButton, toggleCssClass, createTaskCountContainer } from "./commonFn";
+import { createButton, toggleCssClass, createTaskCountContainer, createIconContainer } from "./commonFn";
 import { cachedElements } from "./cacheElements";
 import * as eventHandler from "./eventListeners";
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +16,7 @@ function createNavBar() {
     const nav = document.createElement('nav');
     nav.classList.add('nav');
     nav.appendChild(createNavBtnsList());
-    nav.appendChild(createProjectTab());
+    nav.appendChild(createProjectDropDown());
     return nav;
 }
 
@@ -49,16 +49,36 @@ function createNavBtnsList() {
     Object.keys(navBtnComponents).forEach(navBtnComponent => {
         let liElement = document.createElement('li');
         liElement.appendChild(createButton(navBtnComponents[navBtnComponent]));
+        if (navBtnComponents[navBtnComponent]["innerType"] === "inbox") {
+            liElement.classList.add('tab-open');
+        }
         liElement.appendChild(createTaskCountContainer(navBtnComponents[navBtnComponent]["innerType"]));
         btnsList.appendChild(liElement);
     });
     return btnsList;
 }
 
+function createProjectDropDown() {
+    const projectDropDown = document.createElement('div');
+    projectDropDown.classList.add('project-drop');
+
+    const hBtnContainer = document.createElement('div');
+    const projectH = document.createElement('h1');
+    projectH.textContent = "Projects";
+    let svgImg = `<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#e7e5e4"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M903.232 256l56.768 50.432L512 768 64 306.432 120.768 256 512 659.072z" fill="#e7e5e4"></path></g></svg>`;
+    hBtnContainer.appendChild(projectH);
+    hBtnContainer.appendChild(createIconContainer(svgImg, ['project-drop-down-btn']));
+
+    projectDropDown.appendChild(hBtnContainer);
+    projectDropDown.appendChild(createProjectTab())
+    return projectDropDown;
+}
+
 function createProjectTab() {
     const projectSectionContainer = document.createElement('div');
     projectSectionContainer.classList.add('projects-container');
-    projectSectionContainer.textContent = 'Projects';
+    const dropContent = document.createElement('div');
+    dropContent.classList.add('project-drop');
     const addProjectBlock = document.createElement('div');
     addProjectBlock.classList.add('add-project-block');
     addProjectBlock.appendChild(createButton({"btnName": "+ Add Project", "classList": ["btn", "add-project-btn"]}));
@@ -91,9 +111,11 @@ export function createProject(storedProjectData = false) {
     projectLi.dataset.projectId = storedProjectData["projectId"] || uuidv4();
     const buttonsContainer = document.createElement('div');
 
-    const projectButton = createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType});
-    buttonsContainer.appendChild(projectButton);
-    buttonsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
+    const projectBtnsContainer = document.createElement('div');
+    projectBtnsContainer.classList.add('project-btns-container');
+    projectBtnsContainer.appendChild(createButton({"btnName": projectTitle, "classList": ["btn", "project-btn"], "innerType": innerType}));
+    projectBtnsContainer.appendChild(createButton({"btnName": "X", "classList": ["btn", "project-delete-btn"]}));
+    buttonsContainer.appendChild(projectBtnsContainer);
     buttonsContainer.appendChild(createTaskCountContainer(projectLi.dataset.projectId))
     projectLi.appendChild(buttonsContainer);
     
@@ -142,9 +164,14 @@ export function recreateProjectNavBars(sectionData) {
 
 function createOpenCloseBtn() {
     let div = document.createElement('div');
-    div.appendChild(createButton({"btnName": "O/C", "classList": ["btn", "open-close-btn"]}));
+    // let svgImg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M6,8V16H10V8H6Z" /></svg>`;
+    let svgImg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#e7e5e4"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="sidebar-left"> <g> <rect data-name="Square" fill="none" height="18" id="Square-2" rx="2" ry="2" stroke="#e7e5e4" stroke-miterlimit="10" stroke-width="2" width="18" x="3" y="3"></rect> <line fill="none" stroke="#e7e5e4" stroke-miterlimit="10" stroke-width="2" x1="9" x2="9" y1="21" y2="3"></line> </g> </g> </g> </g></svg>`;
+    div.appendChild(createIconContainer(svgImg, ["btn", "open-close-btn"]));
+    // div.appendChild(createButton({"btnName": "O/C", "classList": ["btn", "open-close-btn"]}));
     return div;
 }
+
+
 
 // Below are functions responsible for sidebar's responsiveness
 
@@ -164,6 +191,8 @@ function openSideBar() {
         setSideBarStyle("280px", "0px");
         setSideBarContainerSize("280px");
     }
+    cachedElements.sideBarButtonContainer().style.justifyContent = "end";
+    cachedElements.sideBarButtonContainer().style.paddingRight = "17px";
 }
 function setSideBarStyle(sideBarWidth = '', navMarginLeft = '') {
     setElementWidth(cachedElements.sideBar(), sideBarWidth);
@@ -174,12 +203,16 @@ export function closeSideBar() {
     setSideBarStyle("48px", "-280px");
     setSideBarContainerSize("48px");
     deactivateOverlay();
+    cachedElements.sideBarButtonContainer().style.justifyContent = "center"
+    cachedElements.sideBarButtonContainer().style.paddingRight = "0";
 }
 
 export function resetSideBarStyle() {
     resetSideBarContainerSize();
     setSideBarStyle();
     resetOverlay();
+    cachedElements.sideBarButtonContainer().style.justifyContent = "";
+    cachedElements.sideBarButtonContainer().style.paddingRight = "";
 }
 
 function resetSideBarContainerSize() {

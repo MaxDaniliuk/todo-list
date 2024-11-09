@@ -40,3 +40,12 @@ export function checkStorageForProjects() {
         sections.forEach(section => recreateProjectNavBars(section));
     }
 }
+
+export function storeDnDPositionLocally(dropzoneList) {
+    localStorage.setItem("DnDposition", JSON.stringify(dropzoneList));
+}
+
+export function getDnDPositions() {
+    return JSON.parse(localStorage.getItem("DnDposition"));
+}
+

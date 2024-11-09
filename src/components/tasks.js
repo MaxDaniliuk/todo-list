@@ -200,6 +200,30 @@ export const taskCountTracker = (function() {
     };
 })();
 
+export const dNDPositionStorage = (function() {
+    const sectionDropzones = [
+        {
+            "section": "inbox",
+            "dropzone": []
+        },
+        {
+            "section": "today",
+            "dropzone": []
+        },
+        {
+            "section": "week",
+            "dropzone": [
+
+            ]
+            // [[], [], []]
+        }
+    ];
+
+    const createWeekDropzones = () => {
+        
+    }
+})();
+
 export function selectCurrentWeekDays() {
     const currentWeekDays = eachDayOfInterval({
         start: startOfISOWeek(new Date()), 

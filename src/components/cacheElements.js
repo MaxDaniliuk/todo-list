@@ -11,6 +11,8 @@ function cacheElements() {
     const overlayOff = () => document.querySelector('.overlay-off');
 
     const navBtns = () => document.querySelectorAll('.nav-btn');
+    const tabOpenLi = () => document.querySelector('.tab-open');
+    const navSectionBtnLi = (dataset) => document.querySelector(`[data-inner-type="${dataset}"]`).closest('li'); 
 
     const sectionContainer = () => document.querySelector('.section-wrapper');
     const section = () => document.querySelector('.section');
@@ -27,6 +29,7 @@ function cacheElements() {
     const lis = () => [...document.querySelectorAll('[data-id]')];
     const subUl = (li) => li.querySelector('ul'); 
     const deleteTaskBtns = () => document.querySelectorAll('.delete-task-btn');
+    const deleteTaskBtnSpan = (deleteBtn) => deleteBtn.querySelector('.delete-btn-bg');
     const editTaskBtns = () => document.querySelectorAll('.edit-task-btn');
 
     const buttonFormContainer = () => document.querySelector('.button-form-container');
@@ -39,6 +42,8 @@ function cacheElements() {
 
     const dueDate = () => document.querySelector('#dueDate');
     const subTaskDueDate = (li) => li.querySelector('.optional-info span');
+    const taskDescriptionPs = () => document.querySelectorAll('.optional-info p');
+    const currentTaskDescriptionP = (li) => li.querySelector('.optional-info p');
     const btnAddTaskForm = () => document.querySelector('.task-form-add-btn');
     const btnCancelForm = () => document.querySelector('.task-form-cancel-btn');
     
@@ -67,6 +72,8 @@ function cacheElements() {
     const projectBtns = () => document.querySelectorAll('.project-btn');
     const removeProjectBtns = () => document.querySelectorAll('.project-delete-btn');
     const taskCounts = () => document.querySelectorAll('.task-count');
+    const dropDownBtn = () => document.querySelector('.project-drop-down-btn');
+    // const dropDownArrow = () => document.querySelector('.arrow');
 
     const draggableListItems = () => [...document.querySelectorAll('.draggable')];
     const notDraggableListItems = () => [...document.querySelectorAll('.draggable:not(.dragging)')];
@@ -81,6 +88,8 @@ function cacheElements() {
         overlay,
         overlayOff,
         navBtns,
+        tabOpenLi,
+        navSectionBtnLi,
         sectionContainer,
         section,
         sectionHeader,
@@ -96,6 +105,7 @@ function cacheElements() {
         lis,
         subUl,
         deleteTaskBtns,
+        deleteTaskBtnSpan,
         editTaskBtns,
         buttonFormContainer,
         buttonFormContinaers,
@@ -104,6 +114,8 @@ function cacheElements() {
         taskForms,
         dueDate,
         subTaskDueDate,
+        taskDescriptionPs,
+        currentTaskDescriptionP,
         inputTitles,
         taskDescTextarea,
         btnAddTaskForm,
@@ -129,6 +141,8 @@ function cacheElements() {
         projectsList,
         projectTitle,
         projectBtns,
+        dropDownBtn,
+        // dropDownArrow,
         removeProjectBtns,
         taskCounts,
         draggableListItems,

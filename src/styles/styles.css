@@ -1,13 +1,35 @@
+@font-face {
+    font-family: 'MyFont';
+    src: url('./fonts/Ubuntu/Ubuntu/Ubuntu-Regular.ttf') format('truetype');
+    font-style: normal;
+}
+
 *,
 *::before,
 *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'MyFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 :root {
+    font-size: 16px;
     --header-height: 100px;
+    --section-bg-color: #e7e5e4; 
+    --sidebar-bg-color: #0c0a09;
+    --sidebar-li-hover-color: #e7e5e4;
+    --sidebar-selected-tab: var(--sidebar-bg-color);
+    --sidebar-selected-tab-bg: #e7e5e4;
+    --bottom-line-color: #d6d3d1;
+    --dotted-line-color: #a8a29e;
+    --dropzone-bg-color: #d6d3d1;
+    --current-day-color: #ef4444;
+    --placeholder-color: var(--sidebar-bg-color);
+    --textarea-color: #44403c;
+    --form-btn-bg-color: #d6d3d1;
+    --disabled-add-task-btn-color: #d6d3d199;
+    --modal-bg-color: #f5f5f4;
 }
 
 .page-wrapper {
@@ -21,38 +43,73 @@
     flex-direction: column;
 }
 
-.header {
-    height: var(--header-height);
-    background-color: cornflowerblue;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.section-wrapper {
-    height: 100%;
-    background-color: white;
-    padding: 15px;
-}
-
 ul {
     list-style: none;
 }
 
-/* Sidebar */
+input,
+textarea {
+    appearance: none;
+}
+
+/* Project logo */
+
+.header-img-container {
+    height: var(--header-height);
+    background-color: var(--section-bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-logo svg {
+    width: 56px;
+    height: auto;
+}
+
+.header-img-container > span:first-child {
+    font-size: 3.5rem;
+}
+
+section.inbox-section .section-header,
+section.today-section .section-header,
+section.week-section > .section-header,
+section.project-section .section-header {
+    background-color: var(--section-bg-color);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0px;
+}
+
+/* section-wrapper */
+
+.section-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-wrapper > section.section {
+    flex: 1;
+    width: clamp(250px, 100%, 910px);
+    margin-bottom: 50px;
+}
+
+
+/* __Sidebar__ */
 
 .sidebar-container {
     min-height: auto;
     position: relative;
-}
 
-.sidebar-container {
     transition: width 300ms;
     transition-timing-function: cubic-bezier(0.4,0,0.2,1);
 }
 
 .sidebar-block {
-    background-color: peachpuff;
+    color: var(--section-bg-color);
+    background-color: var(--sidebar-bg-color);
     height: 100vh;
     position: fixed;
     z-index: 10;
@@ -62,14 +119,271 @@ ul {
 
 .nav {
     width: 280px;
-    padding-top: 10px;
-    padding-left: 25px;
     transition: 300ms;
     transition-timing-function: cubic-bezier(0.4,0,0.2,1);
+    padding-top: 10px;
+    padding-right: 15px;
+    padding-left: 25px;
+}
+
+/* nav buttons */
+
+.nav-btn,
+.project-btn {
+    padding: 5px;
+}
+
+.nav-btn {
+    flex-grow: 1;
+    text-align: start;
+}
+
+.btns-list {
+    padding-bottom: 25px;
+}
+
+.projects-list {
+    padding-top: 15px;
+}
+
+.btns-list,
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.btns-list li {
+    display: flex;
+    gap: 4px;
+}
+
+.project-drop h1 {
+    font-size: 20px;
+ }
+
+.project-drop > div:first-of-type {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.add-project-block {
+    margin-top: 4px
+}
+
+.nav .add-project-btn {
+    display: inline-block;
+    width: 100%;
+    text-align: start;
+    padding: 5px;
+}
+
+.nav-btn,
+.add-project-btn,
+.cancel-project-btn,
+.create-project-btn,
+.project-btn,
+.project-delete-btn {
+    font-size: 18px;
+    outline: none;
+    border: none;
+    color: var(--section-bg-color);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.sidebar-block li,
+.project-drop > div:first-child,
+.nav .add-project-btn,
+.project-form-container > div button:enabled {
+    padding-right: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--sidebar-bg-color);
+    &:hover {
+        border-color: var(--sidebar-li-hover-color);
+    }
+}
+
+.sidebar-block .tab-open {
+    .nav-btn,
+    .project-btn {
+        color: var(--sidebar-selected-tab);
+    }
+    color: var(--sidebar-selected-tab);
+    background-color: var(--sidebar-selected-tab-bg);
+}
+
+.sidebar-block .nav li.tab-open:hover {
+        background-color: var(--sidebar-selected-tab-bg);
+        
+}
+
+.project-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 5px;
+}
+
+.project-form-container input[type="text"] {
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    padding: 3px;
+    background-color: var(--section-bg-color);
+    color: #000000;
+}
+
+.project-form-container > div {
+    display: flex;
+    justify-content: end;
+    gap: 3px;
+}
+
+.project-form-container > div button {
+    font-size: 16px;
+    padding: 5px
+
+}
+
+.project-btn {
+    flex-grow: 1;
+    text-align: start;
+}
+
+.project-btns-container .project-delete-btn {
+    font-size: 15px;
+    opacity: 0;
+    transition: opacity .15s ease-in;
+}
+
+.projects-list li {
+    &:hover {
+        .project-delete-btn {
+            opacity: 1;
+        }
+    }
+}
+
+.projects-list .tab-open {
+    :hover {
+        .project-delete-btn {
+            color: var(--sidebar-bg-color);
+            font-weight: 700;
+        }
+    }
+}
+
+/* Drop down */
+
+.project-drop {
+    position: relative;
+}
+
+.projects-container {
+    position: absolute;
+    width: 240px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0rem);
+}
+
+.project-drop-down-btn {
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.arrow {
+    transform: rotate(180deg);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.project-drop-down-btn svg {
+    width: 18px;
+    height: auto;
+}
+
+.project-drop-down-btn:hover svg {
+    width: 20px;
+    height: auto;
+}
+
+
+.task-count {
+    font-size: 15px;
+    margin-left: auto;
+    min-width: 17px;
+    min-height: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.projects-list li div {
+   display: flex;
+   gap: 10px;
+}
+
+.project-btns-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+ /* button animation */
+.open-close-btn,
+.edit-task-btn {
+    transition: 0.3s all;
+}
+
+.open-close-btn:hover,
+.edit-task-btn:hover {
+    transform: scale(1.10);
+}
+
+.project-btn::-webkit-scrollbar {
+    display: none;
+}
+
+.project-btn {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .sidebar-block > div:first-of-type {
-    text-align: end;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+}
+
+.open-close-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: auto;
+}
+
+.open-close-btn svg {
+    width: 22px;
+    height: auto;
+}
+
+.project-drop-down-btn {
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: auto;
 }
 
 .overlay {
@@ -83,6 +397,10 @@ ul {
 }
 
 @media screen and (max-width: 560px) {
+    .sidebar-block > div:first-of-type {
+        justify-content: center;
+        padding-right: 0;
+    }
     .sidebar-container {
         width: 48px;
     }
@@ -92,7 +410,6 @@ ul {
     .sidebar-block {
         width: 48px;
     }
-
     .overlay-on {
         animation: appear-overlay 300ms;
         animation-timing-function: cubic-bezier(0.4,0,0.2,1);
@@ -107,7 +424,6 @@ ul {
             opacity: 1;
         }
     }
-
     .overlay-off {
         animation: vanish-overlay 300ms;
         animation-timing-function: cubic-bezier(0.4,0,0.2,1);
@@ -123,9 +439,25 @@ ul {
             opacity: 0;
         }
     }
+    .day-date span:first-child {
+        display: none;
+    }
+    .day-date span + span {
+        text-align: center;
+    }
+    .button-form-container form > div + div {
+        justify-content: start;
+    }   
+    .header-content-block {
+        width: calc(100vw - 48px)
+    }
 }
 
-@media screen and (min-width: 561px) {
+@media screen and (min-width: 560px) {
+    .sidebar-block > div:first-of-type {
+        justify-content: end;
+        padding-right: 17px;
+    }
     .nav {
         margin-left: 0;
     }
@@ -135,6 +467,68 @@ ul {
     .sidebar-container {
         width: 280px;
     }
+
+    .day-date span:first-child {
+        display: inline-block;
+    }
+    .day-date span + span {
+        text-align: start;
+    }
+    .button-form-container form > div + div {
+        justify-content: end;
+    }   
+    .header-content-block {
+        width: calc(100vw - 280px)
+    }
+}
+
+/* __Main__ */
+.section-wrapper {
+    height: 100%;
+    background-color: var(--section-bg-color);
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.section .section-heading {
+    margin-bottom: 10px;
+}
+
+.section header.section-header {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.sub-section header.section-header .button-form-container {
+    margin-bottom: 10px;
+}
+
+.sub-section .section-heading {
+    font-size: 19px;
+    margin-bottom: 5px;
+}
+
+.section .add-task-btn {
+    font-size: 16px;
+}
+
+.sub-section .add-task-btn {
+    font-size: 14px;
+}
+
+.add-task-btn {
+    outline: none;
+    border: none;
+    padding: 5px;
+    background-color: var(--section-bg-color);
+    color: var(--sidebar-bg-color);
+    border-radius: 5px;
+}
+
+.add-task-btn:hover {
+    background-color: var(--sidebar-bg-color);
+    color: var(--section-bg-color);
 }
 
 /* Add Task Form */
@@ -144,20 +538,30 @@ ul {
     flex-direction: column;
 }
 
-.add-task-btn {
-    margin-bottom: 10px;
-}
-
 .btn {
     cursor: pointer;
 }
 
-/* 
-.enabled-btn {
-    /* Make transition from disbaled to enabled */
-
 .enabled-btn:disabled {
     cursor: not-allowed;
+}
+
+input[type="text"]::placeholder {
+    color: #000000;
+}
+
+.data-form input[type="text"] {
+    color: #000000;
+}
+
+.data-form textarea::placeholder {
+    color: var(--textarea-color);
+}
+
+.data-form textarea {
+    color: var(--textarea-color);
+    resize: none;
+    line-height: 20px;
 }
 
 .data-form input[type="text"],
@@ -166,12 +570,84 @@ ul {
     height: 20px;
     border: none;
     outline: none;
+    background-color: var(--section-bg-color);
 }
 
-.data-form textarea {
-    resize: none;
-    line-height: 20px;
+.task-form-cancel-btn, 
+.task-form-add-btn {
+    color: var(--sidebar-bg-color);
+    background-color: var(--form-btn-bg-color);
 }
+
+.popup-cancel-btn, 
+.popup-discard-btn,
+.task-form-cancel-btn, 
+.task-form-add-btn,
+.edit-task-add-btn,
+.edit-task-cancel-btn {
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    padding: 5px; 
+    transition: 0.3s all ;
+}
+
+.task-form-add-btn:disabled {
+    background-color: var(--disabled-add-task-btn-color);
+    color: #00000099;
+}
+
+.task-form-add-btn:enabled {
+    color: #000000;
+    background-color: var(--form-btn-bg-color);
+}
+
+.task-form-cancel-btn:hover, 
+.task-form-add-btn:enabled:hover {
+    background-color: var(--dotted-line-color);
+}
+
+.button-form-container form {
+    border: 1px solid var(--dotted-line-color);
+    border-radius: 10px;
+}
+
+.button-form-container form input[type="text"],
+.button-form-container form textarea, 
+.button-form-container form div {
+    padding-left: 7px;
+    padding-right: 7px;
+    margin-bottom: 7px;
+}
+
+.button-form-container form input[type="text"] {
+    border-radius: 10px;
+    padding-top: 7px;
+}
+
+.button-form-container form .elements-block {
+    display: flex;
+    gap: 7px;
+}
+
+.elements-block input,
+.elements-block select {
+    display: inline-block;
+    align-self: flex-start;
+    cursor: pointer;
+    padding: 3px;
+    outline: none;
+    border: 1px solid var(--dotted-line-color);
+    background-color: var(--section-bg-color);
+}
+
+.button-form-container form > div + div {
+    display: flex;
+    padding-bottom: 7px;
+    margin-bottom: 0;
+    gap: 7px;
+}
+
 
 /* Todo Li */
 
@@ -183,21 +659,21 @@ section ul {
 
 .section li {
     outline: none;
-    /* border-bottom: 1px solid #eee; */
     padding: 8px 0;
 }
 
-.draggable {
-    border-bottom: 1px solid #eee;
+.todo.draggable {
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
-.week-list > li {
-    border-bottom: 1px black;
+.draggable {
+    border-bottom: 1px solid var(--bottom-line-color);
 }
 
 li > div {
     display: flex;
-    gap: 4px;
+    gap: 8px;
 }
 
 .task-first-block {
@@ -209,7 +685,7 @@ li > div + div {
     justify-content: space-between;
 }
 
-li > div + div p {
+.optional-info p {
     font-size: 13px;
     padding-left: 24px;
 }
@@ -220,6 +696,9 @@ li > div + div p {
 
 li > div + div span {
     font-size: 13px;
+    display: inline-block;
+    min-width: fit-content;
+    align-self: end;
 }
 
 .delete-task-btn {
@@ -260,36 +739,140 @@ li > div + div span {
     flex-grow: 1;
 }
 
-/* nav buttons */
-
-.btns-list li {
-    display: flex;
-    gap: 4px;
+.task-first-block button .delete-task-btn {
+    transition: 0.3s all;
 }
 
-.task-count {
-    align-self: center;
-    width: 16px;
-    height: 16px;
-    background-color: white;
-    margin-left: auto;
-    text-align: center;
+.task-first-block button.delete-task-btn:active {
+    transform: scale(0.95);
+}
+
+.non-expanded-desc {
+    cursor: pointer;
+    width: clamp(40ch, 100%, 95ch);
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+.expanded-desc {
+    cursor: pointer;
 }
 
 /* Modal */
 
 .modal {
-    margin: auto;
-    width: 300px;
-    height: 350px;
+    min-height: 150px;
 }
 
-.edit-task-btn span {
-    pointer-events: none;
+.modal,
+.popup {
+    border-radius: 5px;
+    border: 1px solid;
+    outline: none;
+    margin: auto;
+    width: 300px;
+    background-color: var(--modal-bg-color);
+}
+
+
+.modal .edit-task input,
+.modal .edit-task textarea,
+.modal .edit-task select {
+    background-color: var(--modal-bg-color);
+}
+
+.modal .edit-task input[type="text"], 
+.modal .edit-task textarea,
+.modal .edit-task .elements-block {
+    margin-bottom: 7px;
+}
+
+.modal .edit-task .elements-block {
+    display: flex;
+    gap: 7px;
+}
+
+.modal .edit-task > div + div {
+    margin-top: 25px;
+}
+
+.popup div,
+.modal .edit-task > div + div {
+    display: flex;
+    justify-content: end;
+    gap: 7px
+}
+
+.popup-cancel-btn, 
+.popup-discard-btn,
+.edit-task-cancel-btn, 
+.edit-task-add-btn:enabled {
+    background-color: var(--section-bg-color);
+}
+
+.edit-task-add-btn:disabled {
+    color: #00000099;
+    background-color: var(--modal-bg-color);
+}
+
+.edit-task-add-btn:enabled {
+    color: #000000;
+}
+
+.edit-task-add-btn:enabled:hover, 
+.edit-task-cancel-btn:hover {
+    background-color: var(--dropzone-bg-color);
+}
+ 
+.edit-task {
+    padding: 15px
+}
+
+.modal::backdrop {
+    background-color: #00000052;
 }
 
 .popup {
     margin: auto;
+    min-height: 100px;
+}
+
+.popup p, 
+.popup div {
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.popup p,
+.popup div {
+    margin-top: 7px;
+}
+
+.popup div {
+    margin-bottom: 7px;
+}
+
+.popup::backdrop {
+    background-color: #00000099;
+}
+
+.popup-cancel-btn:hover, 
+.popup-discard-btn:hover {
+    background-color: var(--dropzone-bg-color);
+}
+
+.edit-task-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: auto;
+}
+
+.edit-task-btn svg {
+    width: 20px;
+    height: auto;
 }
 
 
@@ -297,12 +880,16 @@ li > div + div span {
 
 .dates-container {
     display: flex;
+    justify-content: space-between;
 }
 
-.day-date {
-    flex: 1;
+.day-date span:first-child {
+    text-align: end;
+}
+
+.day-date.current-day span:first-child,
+.day-date.current-day span + span {
     text-align: center;
-    
 }
 
 .day-date span {
@@ -312,20 +899,35 @@ li > div + div span {
 
 .current-day {
     font-weight: bold;
+    display: flex;
+}
+
+.current-day span:first-child {
+    flex: 1;
 }
 
 .current-day span + span {
+    flex: 2;
     color: white;
-    background-color: red;
+    background-color: var(--current-day-color);
+}
+
+.overdue-list .optional-info span {
+    color: var(--current-day-color);
 }
 
 .day-before {
     color: gray;
 }
 
+.day-date span:first-child {
+
+    width: 38px;
+}
+
 .day-date span + span {
     display: inline-block;
-    width: 20px;
+    width: 22px;
 }
 
 /* Project-related */
@@ -340,8 +942,9 @@ li > div + div span {
 1. Make opacity transition from 1 (default) to 0 (invisisble)
 2. When opacity 0 - display: none to hide an li while dragging
 */
-
-
+/* .week-list .dropzone {
+    min-height: 15px;
+} */
 
 .draggable {
     cursor: move;
@@ -349,15 +952,18 @@ li > div + div span {
 }
 
 .over {
-    border: 2px dotted #666;
+    border: 2px dotted var(--dotted-line-color);
 }
 
-/* Check how to add to narrow 0px - 1px dropzone, is it possible at all?  */
-/* .dropzone {
-    min-height: 50px; 
-} */
+.dragging {
+    border: none;
+}
+
+.dropzone {
+    min-height: 15px;
+}
 
 .over-dropzone {
     min-height: 60px;
-    background-color: #666;
+    background-color: var(--dropzone-bg-color);
 }

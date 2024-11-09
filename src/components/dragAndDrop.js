@@ -7,7 +7,6 @@ const draggedElement = (function() {
     const getDraggedEl = () => draggedItem;
     const setDraggedEl = (newItem) => draggedItem = newItem;
     const resetDraggedEl = () => draggedItem = null;
-
     return { getDraggedEl, setDraggedEl, resetDraggedEl };
 })();
 
@@ -15,7 +14,6 @@ const draggedElement = (function() {
 export function handleDragStart(e) {
     this.classList.add('dragging');
     this.style.opacity = "0.2";
-
     draggedElement.setDraggedEl(this);
     e.dataTransfer.clearData();
     e.dataTransfer.effectAllowed = 'move';
@@ -60,27 +58,21 @@ export function handleItemDrop(e) {
     if (e.stopPropagation) {
         e.stopPropagation(); 
     }
-    
     const draggedEl = draggedElement.getDraggedEl();
     const draggedElLocation = draggedEl.parentNode;
     const dropzone = this.parentNode;
-
     if (dropzone.dataset.overdue && dropzone !== draggedElLocation) return;
-
     const dropTargetOffset = e.clientY;
-    
     const {
         top,
         height
     } = this.getBoundingClientRect();
     const dropTargetTopOffset = top + height / 2;
-
     if (dropTargetOffset < dropTargetTopOffset) {
         this.insertAdjacentElement("beforebegin", draggedEl);
     } else if (dropTargetOffset > dropTargetTopOffset) {
         this.insertAdjacentElement("afterend", draggedEl);
     }
-   
     if (dropzone !== draggedElLocation) {
         if (dropzone.dataset.date) {
             updateTaskDate(draggedEl, dropzone);
@@ -98,7 +90,6 @@ export function handleDropzoneDragOver(e) {
 
 export function handleDropzoneDrop(e) {
     e.preventDefault();
-    
     if (e.stopPropagation) {
         e.stopPropagation(); 
     }
@@ -121,19 +112,15 @@ function updateTaskDate(draggedEl, dropzone) {
 export function handleDropAreaDragOver(e) {
     e.preventDefault();
     const dropzone = cachedElements.subUl(this);
-    
     if (dropzone.children.length === 0) {
-        console.log('over')
         dropzone.classList.add('over-dropzone');
     }
 }
 
 export function handleDropAreaDragLeave(e) {
-    
     const dropzone = cachedElements.subUl(this);
     if (!dropzone.contains(e.relatedTarget)) {
         if (dropzone.children.length === 0) {
-            console.log('called');
             dropzone.classList.remove('over-dropzone');
         }
     }

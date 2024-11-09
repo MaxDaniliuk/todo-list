@@ -21,8 +21,16 @@ function createTaskCountContainer(id) {
     return taskCountSpan;
 }
 
+function createIconContainer(svgImg, classList) {
+    const iconContainer = document.createElement('span');
+    iconContainer.classList.add(...classList);
+    iconContainer.innerHTML = svgImg;
+    return iconContainer;
+}
+
 export { 
     createButton,
     toggleCssClass,
-    createTaskCountContainer
+    createTaskCountContainer,
+    createIconContainer
 };

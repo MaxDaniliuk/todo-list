@@ -16,10 +16,19 @@ export function createSection(sectionName = 'inbox') {
 export function switchSection(sectionType) {
     cachedElements.section().remove();
     let newSection = createSection(sectionType); 
-    // if (sectionType === 'inbox' || sectionType === 'today' || sectionType === 'week') {
-    //     newSection = createSection(sectionType);
-    // }
+    if (sectionType !== 'inbox' && sectionType !== 'today' && sectionType !== 'week') {
+        newSection.classList.add('project-section');
+    }
+    console.log(newSection)
     cachedElements.sectionContainer().appendChild(newSection);
+    highlightSelectedTab(sectionType);
+}
+
+function highlightSelectedTab(tab) {
+    if (cachedElements.tabOpenLi()) {
+        cachedElements.tabOpenLi().classList.remove('tab-open');
+    }
+    cachedElements.navSectionBtnLi(tab).classList.add('tab-open');
 }
 
 function getSectionHeader(sectionHeader) {
