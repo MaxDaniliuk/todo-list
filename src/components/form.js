@@ -81,6 +81,10 @@ export function adjustTextareaHeight() {
     cachedElements.taskDescTextarea().style.height = `${cachedElements.taskDescTextarea().scrollHeight}px`;
 }
 
+export function adjustEditFormTextarea() {
+    cachedElements.editFormDescription().style.height = `${cachedElements.editFormDescription().scrollHeight}px`;
+}
+
 export function validateTitle(inputTitle, button) {
     if (inputTitle.value.trim() !== '') {
         button.removeAttribute("disabled");
@@ -102,15 +106,3 @@ export function setupCalendar(buttonFormContainer = undefined) {
         cachedElements.dueDate().value = date;
     }
 }
-
-// function getSpecificWeekDate(buttonFromContainer) {
-//     const currentLi = buttonFromContainer.closest('li');
-//     const liList = [...cachedElements.todoList().children];
-//     let targetIndex = null;
-//     liList.forEach((li, index) => {
-//         if (li === currentLi) {
-//             targetIndex = index;
-//         }
-//     });
-//     return format(selectCurrentWeekDays()[targetIndex], 'yyyy-MM-dd');
-// }

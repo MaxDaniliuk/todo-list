@@ -1,7 +1,7 @@
 import loadPage from "./loadPage";
 import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle, switchProjectFormAndBtn, createProject, closeAddProjectForm } from "./sidebar";
-import { adjustTextareaHeight, controlFormDisplay, validateTitle, closeTaskForm } from "./form.js";
+import { adjustTextareaHeight, adjustEditFormTextarea, controlFormDisplay, validateTitle, closeTaskForm } from "./form.js";
 import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
 import getTaskData, { tasksStorage, storageModerator, taskCountTracker} from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges, visualiseTaskData } from "./taskUI.js";
@@ -246,7 +246,7 @@ function editTask() {
         if (editTaskBtn.getAttribute('listenerOnEditBtn') !== 'true') {
             editTaskBtn.addEventListener('click', (e) => {
                 openTaskEditor(e.target.closest('li'));
-                console.log('editing')
+                adjustEditFormTextarea();
                 controlTextareaHeight();
                 validateEditedData();
                 closeEditForm();

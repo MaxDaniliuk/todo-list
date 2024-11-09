@@ -19,7 +19,6 @@ export function switchSection(sectionType) {
     if (sectionType !== 'inbox' && sectionType !== 'today' && sectionType !== 'week') {
         newSection.classList.add('project-section');
     }
-    console.log(newSection)
     cachedElements.sectionContainer().appendChild(newSection);
     highlightSelectedTab(sectionType);
 }

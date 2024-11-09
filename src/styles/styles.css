@@ -97,6 +97,8 @@ section.project-section .section-header {
 }
 
 
+
+
 /* __Sidebar__ */
 
 .sidebar-container {
@@ -550,24 +552,28 @@ input[type="text"]::placeholder {
     color: #000000;
 }
 
-.data-form input[type="text"] {
-    color: #000000;
-}
-
 .data-form textarea::placeholder {
     color: var(--textarea-color);
 }
 
+.data-form input[type="text"] {
+    color: #000000;
+    height: 20px;
+}
+
 .data-form textarea {
     color: var(--textarea-color);
+    display: block;
+    overflow: auto; 
     resize: none;
+    height: 20px;
+    max-height: auto;
     line-height: 20px;
 }
 
 .data-form input[type="text"],
 .data-form textarea
  {  
-    height: 20px;
     border: none;
     outline: none;
     background-color: var(--section-bg-color);
@@ -783,9 +789,12 @@ li > div + div span {
 }
 
 .modal .edit-task input[type="text"], 
-.modal .edit-task textarea,
 .modal .edit-task .elements-block {
     margin-bottom: 7px;
+}
+
+.modal .edit-task textarea {
+    margin-bottom: 12px;
 }
 
 .modal .edit-task .elements-block {
