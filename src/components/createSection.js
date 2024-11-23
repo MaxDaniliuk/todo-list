@@ -73,7 +73,6 @@ function createThisWeekSection() {
     let overdueSectionNeeded = false;
     for (let i = 0; i < currentWeekDays.length; i++) {
         let deicticDayTerm = '';
-        // if (thisWeekTasks.length !== 0) {
             if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
                 deicticDayTerm = 'day-before';
                 if (thisWeekTasks.length !== 0) {    
@@ -84,7 +83,6 @@ function createThisWeekSection() {
                     }
                 }
             } 
-        // }
         if ((format(currentWeekDays[i], 'yyyy-MM-dd') >= format(new Date(), 'yyyy-MM-dd'))) {
             overdueSectionNeeded = false;
             let subSectionHeading = format(currentWeekDays[i], "d MMM ‧ EEEE");

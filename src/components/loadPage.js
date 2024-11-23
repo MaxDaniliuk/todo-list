@@ -54,8 +54,6 @@ function createHeader() {
 function createSectionContent() {
     const sectionWrapper = document.createElement('div');
     sectionWrapper.classList.add('section-wrapper');
-    // Here is a part that should display content - inbox, today etc
     sectionWrapper.appendChild(createSection());
-    //
     return sectionWrapper;
 }

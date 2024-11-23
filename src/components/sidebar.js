@@ -164,10 +164,8 @@ export function recreateProjectNavBars(sectionData) {
 
 function createOpenCloseBtn() {
     let div = document.createElement('div');
-    // let svgImg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M6,8V16H10V8H6Z" /></svg>`;
     let svgImg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#e7e5e4"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title></title> <g id="Complete"> <g id="sidebar-left"> <g> <rect data-name="Square" fill="none" height="18" id="Square-2" rx="2" ry="2" stroke="#e7e5e4" stroke-miterlimit="10" stroke-width="2" width="18" x="3" y="3"></rect> <line fill="none" stroke="#e7e5e4" stroke-miterlimit="10" stroke-width="2" x1="9" x2="9" y1="21" y2="3"></line> </g> </g> </g> </g></svg>`;
     div.appendChild(createIconContainer(svgImg, ["btn", "open-close-btn"]));
-    // div.appendChild(createButton({"btnName": "O/C", "classList": ["btn", "open-close-btn"]}));
     return div;
 }
 

@@ -8,7 +8,6 @@ import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskE
 import { storeDataLocally, checkStorageForProjects } from "./localStorage.js";
 import * as dragNDrop from "./dragAndDrop.js";
 
-//start app 
 export default function startApp() {
     window.addEventListener('DOMContentLoaded', () => {
         tasksStorage.setInbox();
@@ -106,7 +105,6 @@ export function highlightDropArea(dropzone) {
         });
 }
 
-// SideBar-specific event listeners
 export function openCloseSideBar() {
     cachedElements.sideBarButton().addEventListener('click', () => {
         operateSideBar()
@@ -122,7 +120,6 @@ export function removeOverlay() {
     cachedElements.overlay().addEventListener('click', closeSideBar);
 }
 
-// Task addition form specific event listeners
 export function validateInputTitle(button) {
     cachedElements.inputTitles().forEach((inputTitle) => {
         inputTitle.addEventListener('input', () => {
@@ -181,7 +178,6 @@ function removeTask() {
     });
 }
 
-// Section navigation specific event listeners
 function differentiateNavButtons() {
     cachedElements.navBtns().forEach((navBtn) => {
         navBtn.addEventListener('click', () => {

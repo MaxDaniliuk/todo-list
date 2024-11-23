@@ -147,7 +147,7 @@ export function discardTaskChanges() {
 export function applyChanges(buttonType) {
     // update task in the inbox array
     storageModerator.updateTask();
-    // update an li based on the data of task copy, 
+    // update an li based on the data of task copy
     updateUITask(buttonType);
     // remove task copy
     storageModerator.clearEditedTaskCopy();
@@ -182,7 +182,7 @@ export function displayDueTodayTasks() {
     cachedElements.todoList().classList.add('dropzone');
 }
 
-export function displayThisWeekTasks(dayDate, currentUl) { // I can select another time 
+export function displayThisWeekTasks(dayDate, currentUl) { 
     if (!currentUl.dataset.overdue) {
         currentUl.dataset.date = dayDate;
         currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
