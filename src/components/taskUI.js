@@ -3,7 +3,7 @@ import { createButton, createIconContainer } from "./commonFn";
 import { createTaskForm, setupCalendar } from "./form";
 import { tasksStorage, storageModerator, selectCurrentWeekDays, taskCountTracker } from "./tasks";
 import { format, isToday } from "date-fns";
-import { storeDataLocally } from "./localStorage.js";
+import { storeDataLocally  } from "./localStorage.js";
 
 export default function displayTask(taskObj) {
     const li = document.createElement('li');
@@ -183,15 +183,13 @@ export function displayDueTodayTasks() {
 }
 
 export function displayThisWeekTasks(dayDate, currentUl) { // I can select another time 
+    if (!currentUl.dataset.overdue) {
+        currentUl.dataset.date = dayDate;
+        currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
+        currentUl.classList.add('dropzone');
+    }
     if (tasksStorage.getInbox().length > 0) {
         const thisWeekTasks = storageModerator.sortThisWeekTasks();
-        
-        // !currentUl.classList.contains("overdue-list")
-        if (!currentUl.dataset.overdue) {
-            currentUl.dataset.date = dayDate;
-            currentUl.classList.remove(`${format(dayDate, "d")}-day-list`);
-            currentUl.classList.add('dropzone');
-        }
         for (let i = 0; i < thisWeekTasks.length; i++) {
             if (thisWeekTasks[i]["due_date"] >= dayDate && thisWeekTasks[i]["due_date"] < format(new Date(), 'yyyy-MM-dd')) {
                 currentUl.appendChild(displayTask(thisWeekTasks[i]));
@@ -221,30 +219,28 @@ export function visualiseTaskData(currentTask, buttonPressed, currentSection = u
     if (currentTask["due_date"] === undefined) {
         currentTaskDueDate = storageModerator.getEditedTask(currentTask.dataset.id);
     }
-    if (tasksStorage.getStorageSection() === 'today' && currentTaskDueDate["due_date"] === new Date().toISOString().substring(0, 10)) {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
-    } else if (tasksStorage.getStorageSection() === 'inbox') {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
-    } else if ((tasksStorage.getStorageSection() === 'week') && (currentTaskDueDate["due_date"] >= format(currentWeekDays[0], 'yyyy-MM-dd') && currentTaskDueDate["due_date"] <= format(currentWeekDays[6], 'yyyy-MM-dd'))) {
+    if ((tasksStorage.getStorageSection() === 'week') && (currentTaskDueDate["due_date"] >= format(currentWeekDays[0], 'yyyy-MM-dd') && currentTaskDueDate["due_date"] <= format(currentWeekDays[6], 'yyyy-MM-dd'))) {
         if (currentSection === undefined) {
             currentSection = currentTask.closest('section');
         }
         determineButtonFunctionality(buttonPressed, currentTask, cachedElements.closestTodoList(currentSection));
     } else {
-        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList());
+        determineButtonFunctionality(buttonPressed, currentTask, cachedElements.todoList(), currentTaskDueDate["due_date"]);
     }
     taskCountTracker.countTasks(cachedElements.taskCounts());
     storeDataLocally(tasksStorage.getInbox());
 }
 
-function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
+function determineButtonFunctionality(buttonPressed, currentTask, correctList, todayDate = undefined) {
     if (buttonPressed === 'add-type') {
         // curretnTask is a todo object
         if (tasksStorage.getStorageSection() === 'week' && currentTask["due_date"] <= format(selectCurrentWeekDays()[6], 'yyyy-MM-dd')) {
             let selectedDate = storageModerator.getEditedTask(currentTask["taskId"])["due_date"];
-            
             return determineCorrectSubsection(selectedDate).appendChild(displayTask(currentTask));
         } else if (tasksStorage.getStorageSection() !== 'week') {
+            if (tasksStorage.getStorageSection() === 'today' && todayDate !== new Date().toISOString().substring(0, 10)) {
+                return;
+            }
             return correctList.appendChild(displayTask(currentTask));
         }
     } else if (buttonPressed === 'submit-type') {
@@ -255,6 +251,9 @@ function determineButtonFunctionality(buttonPressed, currentTask, correctList) {
                 return determineCorrectSubsection(newDate).appendChild(displayTask(tasksStorage.getEditedTaskCopy()));
             }
         } else {
+            if (tasksStorage.getStorageSection() === 'today' && todayDate !== new Date().toISOString().substring(0, 10)) {
+                return;
+            }
             return correctList.insertBefore(displayTask(tasksStorage.getEditedTaskCopy()), currentTask);
         }
     }

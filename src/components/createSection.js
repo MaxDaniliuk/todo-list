@@ -16,9 +16,6 @@ export function createSection(sectionName = 'inbox') {
 export function switchSection(sectionType) {
     cachedElements.section().remove();
     let newSection = createSection(sectionType); 
-    if (sectionType !== 'inbox' && sectionType !== 'today' && sectionType !== 'week') {
-        newSection.classList.add('project-section');
-    }
     cachedElements.sectionContainer().appendChild(newSection);
     highlightSelectedTab(sectionType);
 }
@@ -76,16 +73,18 @@ function createThisWeekSection() {
     let overdueSectionNeeded = false;
     for (let i = 0; i < currentWeekDays.length; i++) {
         let deicticDayTerm = '';
-        if (thisWeekTasks.length !== 0) {
+        // if (thisWeekTasks.length !== 0) {
             if (format(currentWeekDays[i], 'yyyy-MM-dd') < format(new Date(), 'yyyy-MM-dd')) {
                 deicticDayTerm = 'day-before';
-                if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
-                if (overdueSectionNeeded === false && cachedElements.overdueList()) {
-                    overdueSectionNeeded = true;
-                    cachedElements.subSectionBtnForm().remove();
+                if (thisWeekTasks.length !== 0) {    
+                    if (thisWeekTasks[0]["due_date"] < format(new Date(), 'yyyy-MM-dd')) createDaySection(currentWeekDays[i] ,'Overdue', overdueSectionNeeded);
+                    if (overdueSectionNeeded === false && cachedElements.overdueList()) {
+                        overdueSectionNeeded = true;
+                        cachedElements.subSectionBtnForm().remove();
+                    }
                 }
             } 
-        }
+        // }
         if ((format(currentWeekDays[i], 'yyyy-MM-dd') >= format(new Date(), 'yyyy-MM-dd'))) {
             overdueSectionNeeded = false;
             let subSectionHeading = format(currentWeekDays[i], "d MMM ‧ EEEE");

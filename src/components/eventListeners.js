@@ -3,7 +3,7 @@ import { cachedElements } from "./cacheElements";
 import { operateSideBar, closeSideBar, resetSideBarStyle, switchProjectFormAndBtn, createProject, closeAddProjectForm } from "./sidebar";
 import { adjustTextareaHeight, adjustEditFormTextarea, controlFormDisplay, validateTitle, closeTaskForm } from "./form.js";
 import { switchSection, customiseWeekSection, isOverdueSectionEmpty } from "./createSection.js";
-import getTaskData, { tasksStorage, storageModerator, taskCountTracker} from "./tasks";
+import getTaskData, { tasksStorage, storageModerator, taskCountTracker } from "./tasks";
 import { displayInboxTasks, displayDueTodayTasks, displayProjectTasks, openTaskEditor, closeTaskEditor, openPopupMessage, closePopupMessage, discardTaskChanges, validateTaskEdition, applyChanges, visualiseTaskData } from "./taskUI.js";
 import { storeDataLocally, checkStorageForProjects } from "./localStorage.js";
 import * as dragNDrop from "./dragAndDrop.js";
@@ -169,7 +169,7 @@ function removeTask() {
     cachedElements.deleteTaskBtns().forEach((deleteTaskBtn) => {
         if (deleteTaskBtn.getAttribute('listenerOnDeleteBtn') !== 'true') {
             deleteTaskBtn.addEventListener('click', (e) => {
-                let targetTask = e.target.closest('li')
+                let targetTask = e.target.closest('li');
                 storageModerator.deleteTask(targetTask.dataset.id);
                 taskCountTracker.countTasks(cachedElements.taskCounts());
                 targetTask.remove();
@@ -196,21 +196,21 @@ function selectedSection(buttonPressed, activeSection) {
     if (buttonPressed.dataset.innerType === "inbox" && activeSection !== "inbox") {
         activeSection = 'inbox';
         if (!storageModerator.isSectionOpen(activeSection)) {
-            switchSection('inbox');
+            switchSection(activeSection);
             displayInboxTasks();
             selected = true;
         }
     } else if (buttonPressed.dataset.innerType === "today" && activeSection !== "today") {
         activeSection = 'today';
         if (!storageModerator.isSectionOpen(activeSection)) {
-            switchSection('today'); // 
+            switchSection(activeSection); 
             displayDueTodayTasks();
             selected = true;
         }
     } else if (buttonPressed.dataset.innerType === "week" && activeSection !== "week") {
         activeSection = 'week';
         if (!storageModerator.isSectionOpen(activeSection)) {
-            switchSection('week');
+            switchSection(activeSection);
             customiseWeekSection();
             selected = true;
         }
@@ -292,7 +292,7 @@ function submitTaskChanges() {
             editTask();
             isOverdueSectionEmpty();
             activateDragNDrop();
-            expandDescription();
+            expandDescription();            
         }
     });
 }
@@ -362,15 +362,14 @@ export function deleteProject() {
                 storageModerator.deleteProjectTasks(targetProjectLi.dataset.projectId);
                 taskCountTracker.removeSection(targetProjectLi.dataset.projectId);
                 // remove project Li
-                targetProjectLi.remove()
-                // removoe project section and load inbox (loadPage() fn )
+                targetProjectLi.remove();
+                // removoe project section and load inbox
                 switchSection('inbox');
                 displayInboxTasks();
                 makeSelectedSectionResponsive('inbox');
                 // closeAddProjectFrom 
                 closeAddProjectForm();
-    
-                // removoe project section and load inbox (loadPage() fn )
+                
                 taskCountTracker.countTasks(cachedElements.taskCounts());
                 storeDataLocally(tasksStorage.getInbox());
             });

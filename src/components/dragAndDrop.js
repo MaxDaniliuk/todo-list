@@ -1,6 +1,7 @@
 import { cachedElements } from "./cacheElements";
 import { isOverdueSectionEmpty } from "./createSection";
-import { storageModerator, taskCountTracker } from "./tasks";
+import { tasksStorage, storageModerator, taskCountTracker } from "./tasks";
+import { storeDataLocally } from "./localStorage.js";
 
 const draggedElement = (function() {
     let draggedItem = null;
@@ -76,9 +77,10 @@ export function handleItemDrop(e) {
     if (dropzone !== draggedElLocation) {
         if (dropzone.dataset.date) {
             updateTaskDate(draggedEl, dropzone);
+            storeDataLocally(tasksStorage.getInbox()); // saves to local Storage
         }
         isOverdueSectionEmpty();
-    }
+    }    
     return false;
 }
 
@@ -96,6 +98,7 @@ export function handleDropzoneDrop(e) {
     if (e.currentTarget.children.length === 0) {
         e.currentTarget.appendChild(draggedElement.getDraggedEl());
         updateTaskDate(draggedElement.getDraggedEl(), this);
+        storeDataLocally(tasksStorage.getInbox()); // saves to local Stroage
         return;
     }
     return false;

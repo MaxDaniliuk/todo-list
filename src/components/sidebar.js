@@ -124,8 +124,8 @@ export function createProject(storedProjectData = false) {
     } else {
         cachedElements.projectsList().appendChild(projectLi);
     }
-    taskCountTracker.addSection(projectLi.dataset.projectId);
-}
+    taskCountTracker.addSection(projectLi.dataset.projectId);    
+    }
 
 function createProjectsList(firstProjectBtnLi = null) {
     const projectsUl = document.createElement('ul');

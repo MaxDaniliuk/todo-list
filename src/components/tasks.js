@@ -25,7 +25,6 @@ export default function getTaskData(form) {
 export const tasksStorage = (function() {
     
     let inbox = [];
-    // grab inbox from loca storage if it exists
     const setInbox = () => {
         inbox = getDataFromLocalStorage() || [];
     }
@@ -140,9 +139,17 @@ export const storageModerator = (function() {
         getTodayTasks, sortThisWeekTasks, deleteTask, 
         isSectionOpen, copyEditedTask, getEditedTask, 
         compareTasks, clearEditedTaskCopy, updateTask,
-        getProjectTasks, deleteProjectTasks 
+        getProjectTasks, deleteProjectTasks
     };
 })();
+
+export function selectCurrentWeekDays() {
+    const currentWeekDays = eachDayOfInterval({
+        start: startOfISOWeek(new Date()), 
+        end: endOfISOWeek(new Date())
+    })
+    return currentWeekDays;
+}
 
 export const taskCountTracker = (function() {
 
@@ -171,11 +178,12 @@ export const taskCountTracker = (function() {
         sectionTypes.push({
             section: section,
             getCount() {
-                return storageModerator.getProjectTasks(this.section).length
+                return storageModerator.getProjectTasks(this.section).length;
             }
         })
     };
-    const removeSection = (section) => {
+    
+    const removeSection = (section) => { // projectId
         for (let i = 0; i < sectionTypes.length; i++) {
             if (sectionTypes[i]["section"] === section) {
                 return sectionTypes.splice(i, 1);
@@ -199,35 +207,3 @@ export const taskCountTracker = (function() {
         countTasks
     };
 })();
-
-export const dNDPositionStorage = (function() {
-    const sectionDropzones = [
-        {
-            "section": "inbox",
-            "dropzone": []
-        },
-        {
-            "section": "today",
-            "dropzone": []
-        },
-        {
-            "section": "week",
-            "dropzone": [
-
-            ]
-            // [[], [], []]
-        }
-    ];
-
-    const createWeekDropzones = () => {
-        
-    }
-})();
-
-export function selectCurrentWeekDays() {
-    const currentWeekDays = eachDayOfInterval({
-        start: startOfISOWeek(new Date()), 
-        end: endOfISOWeek(new Date())
-    })
-    return currentWeekDays;
-}

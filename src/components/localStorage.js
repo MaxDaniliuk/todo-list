@@ -2,7 +2,7 @@ import { recreateProjectNavBars } from "./sidebar.js";
 
 export function storeDataLocally(inbox) {
     localStorage.setItem("todos", JSON.stringify(inbox));
-    console.log(JSON.parse(localStorage.getItem("todos")), 'Shows storage');
+    // console.log(JSON.parse(localStorage.getItem("todos")), 'Show storage');
 }
 
 export function getDataFromLocalStorage() {
@@ -40,12 +40,3 @@ export function checkStorageForProjects() {
         sections.forEach(section => recreateProjectNavBars(section));
     }
 }
-
-export function storeDnDPositionLocally(dropzoneList) {
-    localStorage.setItem("DnDposition", JSON.stringify(dropzoneList));
-}
-
-export function getDnDPositions() {
-    return JSON.parse(localStorage.getItem("DnDposition"));
-}
-

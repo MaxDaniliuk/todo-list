@@ -1,5 +1,3 @@
-import { create } from "lodash";
-
 function cacheElements() {
 
     const sideBarContainer = () => document.querySelector('.sidebar-container');
@@ -15,6 +13,7 @@ function cacheElements() {
     const navSectionBtnLi = (dataset) => document.querySelector(`[data-inner-type="${dataset}"]`).closest('li'); 
 
     const sectionContainer = () => document.querySelector('.section-wrapper');
+    const mainSection = () => document.querySelector('.section-wrapper > .section');
     const section = () => document.querySelector('.section');
     const sectionHeader = () => document.querySelector('.section-header');
     const sectionHeading = () => document.querySelector('.section-heading');
@@ -23,6 +22,7 @@ function cacheElements() {
     const subTodoList = (subSection) => subSection.querySelector('.sub-section ul');
     const subTodoLists = () => document.querySelectorAll('.sub-section ul');
     const overdueList = () => document.querySelector('.overdue');
+    const overdueUl = () => document.querySelector('.overdue-list');
     const subSectionHeading = (subSection) => subSection.querySelector('.section-heading');
     const subSectionBtnForm = () => document.querySelector('.sub-section .button-form-container'); 
     const li = () => document.querySelector('li');
@@ -73,7 +73,6 @@ function cacheElements() {
     const removeProjectBtns = () => document.querySelectorAll('.project-delete-btn');
     const taskCounts = () => document.querySelectorAll('.task-count');
     const dropDownBtn = () => document.querySelector('.project-drop-down-btn');
-    // const dropDownArrow = () => document.querySelector('.arrow');
 
     const draggableListItems = () => [...document.querySelectorAll('.draggable')];
     const notDraggableListItems = () => [...document.querySelectorAll('.draggable:not(.dragging)')];
@@ -91,6 +90,7 @@ function cacheElements() {
         tabOpenLi,
         navSectionBtnLi,
         sectionContainer,
+        mainSection,
         section,
         sectionHeader,
         sectionHeading,
@@ -99,6 +99,7 @@ function cacheElements() {
         subTodoList,
         subTodoLists,
         overdueList,
+        overdueUl,
         subSectionHeading,
         subSectionBtnForm,
         li,
@@ -142,7 +143,6 @@ function cacheElements() {
         projectTitle,
         projectBtns,
         dropDownBtn,
-        // dropDownArrow,
         removeProjectBtns,
         taskCounts,
         draggableListItems,
